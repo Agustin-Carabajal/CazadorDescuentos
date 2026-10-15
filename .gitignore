@@ -485,6 +485,9 @@ $RECYCLE.BIN/
 .env
 !.env.example
 
+# IDE local launch settings
+Properties/launchSettings.json
+
 # Extracted data and logs
 capturas/
 logs/
