@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Backend/">
+    <Project Path="src/Backend/CazadorDescuentos.Backend.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CazadorDescuentos.Tests/CazadorDescuentos.Tests.csproj" />
+  </Folder>
+</Solution>

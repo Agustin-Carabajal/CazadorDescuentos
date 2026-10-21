@@ -1,0 +1,78 @@
+@model List<CazadorDescuentos.Modules.CatalogAndUserExperience.Models.UserReport>
+@{
+    ViewData["Title"] = "Panel de Reportes de Usuarios";
+}
+
+<div class="mb-6 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-black text-slate-800 tracking-tight">Reportes de la Comunidad</h1>
+        <p class="text-xs text-slate-500">Alertas de ofertas vencidas, inconsistencias de precios o enlaces rotos reportados por usuarios.</p>
+    </div>
+    <a href="/" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-medium transition">
+        &larr; Volver al Comparador
+    </a>
+</div>
+
+@if (Model == null || Model.Count == 0)
+{
+    <div class="bg-white rounded-xl border border-slate-200 p-12 text-center shadow-sm">
+        <i class="fa-solid fa-circle-check text-emerald-500 text-4xl mb-3"></i>
+        <h3 class="text-base font-bold text-slate-800 mb-1">No hay reportes pendientes</h3>
+        <p class="text-xs text-slate-500">Todas las ofertas publicadas se encuentran en estado óptimo.</p>
+    </div>
+}
+else
+{
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <table class="w-full text-left border-collapse text-sm">
+            <thead>
+                <tr class="bg-slate-100 text-xs font-bold text-slate-600 uppercase border-b border-slate-200">
+                    <th class="py-3 px-4">ID</th>
+                    <th class="py-3 px-4">Oferta</th>
+                    <th class="py-3 px-4">Marca</th>
+                    <th class="py-3 px-4">Motivo</th>
+                    <th class="py-3 px-4">Comentarios</th>
+                    <th class="py-3 px-4">Fecha Reporte</th>
+                    <th class="py-3 px-4">Estado</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                @foreach (var report in Model)
+                {
+                    <tr class="hover:bg-slate-50">
+                        <td class="py-3 px-4 font-mono text-xs text-slate-400">#@report.Id</td>
+                        <td class="py-3 px-4 font-semibold text-slate-900">
+                            @(report.Offer?.Title ?? $"Oferta #{report.OfferId}")
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                                @(report.Offer?.Brand ?? "-")
+                            </span>
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="text-xs font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                                @report.Reason
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-xs text-slate-600 max-w-xs truncate" title="@report.Comments">
+                            @(string.IsNullOrWhiteSpace(report.Comments) ? "Sin comentarios adicionales" : report.Comments)
+                        </td>
+                        <td class="py-3 px-4 text-xs text-slate-500 whitespace-nowrap">
+                            @report.ReportedAt.ToString("g")
+                        </td>
+                        <td class="py-3 px-4">
+                            @if (report.IsResolved)
+                            {
+                                <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Resuelto</span>
+                            }
+                            else
+                            {
+                                <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">Pendiente</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

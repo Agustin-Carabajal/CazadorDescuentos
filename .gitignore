@@ -1,0 +1,28 @@
+## .NET & Visual Studio
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+
+## Node.js & Vite
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+## Database & Local Storage
+*.db
+*.sqlite
+*.sqlite3
+
+## OS generated
+.DS_Store
+Thumbs.db

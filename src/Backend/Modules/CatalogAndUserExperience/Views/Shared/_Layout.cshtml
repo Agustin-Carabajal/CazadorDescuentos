@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Cazador de Descuentos</title>
+    <!-- Modern Tailwind & Font Awesome via CDN for lightweight single-page UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        .brand-mcdonalds { background-color: #DA291C; color: #FFC72C; }
+        .brand-burgerking { background-color: #D62300; color: #F5EBDC; }
+        .brand-mostaza { background-color: #C8102E; color: #FFFFFF; }
+        .badge-app { background-color: #EDE9FE; color: #6D28D9; border: 1px solid #DDD6FE; }
+        .badge-web { background-color: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }
+        .badge-app-web { background-color: #DCFCE7; color: #15803D; border: 1px solid #BBF7D0; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col font-sans">
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🍔</span>
+                <div>
+                    <a href="/" class="text-xl font-bold text-slate-800 tracking-tight hover:text-red-600 transition">Cazador de Descuentos</a>
+                    <p class="text-xs text-slate-500 font-medium">Comparador de ofertas en tiempo real: McDonald’s • Burger King • Mostaza</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button onclick="triggerScrape()" id="scrapeBtn" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5 border border-slate-300">
+                    <i class="fa-solid fa-arrows-rotate" id="scrapeIcon"></i>
+                    <span>Actualizar Ofertas</span>
+                </button>
+                <a href="/Reports" class="text-xs text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-shield-halved mr-1"></i> Reportes
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 space-y-1">
+            <p><strong>Cazador de Descuentos MVP</strong> — Centralizador automatizado de ofertas de comida rápida en Argentina.</p>
+            <p>Precios normalizados en ARS. Los logos y nombres de marcas pertenecen a sus respectivos dueños.</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Container -->
+    <div id="toast" class="fixed bottom-6 right-6 hidden bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 z-50 text-sm transition-all duration-300">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toastMessage">Acción completada</span>
+    </div>
+
+    <script>
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMessage.textContent = message;
+            toastIcon.className = isSuccess 
+                ? 'fa-solid fa-circle-check text-emerald-400 text-lg' 
+                : 'fa-solid fa-circle-exclamation text-rose-400 text-lg';
+
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        async function triggerScrape() {
+            const btn = document.getElementById('scrapeBtn');
+            const icon = document.getElementById('scrapeIcon');
+            btn.disabled = true;
+            icon.classList.add('fa-spin');
+
+            try {
+                const res = await fetch('/api/ingestion/trigger-scrape', { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message, true);
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    showToast('Error en la actualización', false);
+                }
+            } catch (err) {
+                showToast('Error al conectar con el servidor', false);
+            } finally {
+                btn.disabled = false;
+                icon.classList.remove('fa-spin');
+            }
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

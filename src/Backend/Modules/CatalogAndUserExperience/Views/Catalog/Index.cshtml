@@ -1,0 +1,428 @@
+@model List<CazadorDescuentos.Modules.CatalogAndUserExperience.Models.OfferResponseDto>
+@{
+    ViewData["Title"] = "Comparador de Ofertas";
+    var selectedBrand = ViewBag.SelectedBrand as string ?? "all";
+    var selectedBenefitType = ViewBag.SelectedBenefitType as string ?? "all";
+    var searchQuery = ViewBag.SearchQuery as string ?? "";
+    var sortBy = ViewBag.SortBy as string ?? "newest";
+}
+
+<!-- Hero & Filter Header -->
+<div class="mb-8">
+    <div class="bg-gradient-to-r from-red-600 via-amber-600 to-yellow-500 rounded-2xl p-6 text-white shadow-lg mb-6">
+        <h1 class="text-2xl sm:text-3xl font-black tracking-tight mb-2">Compara las Mejores Ofertas de Hoy</h1>
+        <p class="text-white/90 text-sm max-w-2xl">
+            Encuentra combos, 2x1 y descuentos en <strong>McDonald's, Burger King y Mostaza</strong> actualizados automáticamente con IA. Copia el cupón y ahorra al instante.
+        </p>
+    </div>
+
+    <!-- Filters & Search Toolbar -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <!-- Brand Pills -->
+        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+            <a href="?brand=all&benefitType=@selectedBenefitType&search=@searchQuery&sort=@sortBy" 
+               class="px-4 py-2 rounded-lg text-sm font-semibold transition border @(selectedBrand == "all" ? "bg-slate-900 text-white border-slate-900 shadow-sm" : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100")">
+                Todas (@Model.Count)
+            </a>
+            <a href="?brand=McDonald's&benefitType=@selectedBenefitType&search=@searchQuery&sort=@sortBy" 
+               class="px-4 py-2 rounded-lg text-sm font-semibold transition border @(selectedBrand == "McDonald's" ? "bg-red-600 text-yellow-300 border-red-600 shadow-sm" : "bg-red-50 text-red-700 border-red-200 hover:bg-red-100")">
+                🍟 McDonald's
+            </a>
+            <a href="?brand=Burger King&benefitType=@selectedBenefitType&search=@searchQuery&sort=@sortBy" 
+               class="px-4 py-2 rounded-lg text-sm font-semibold transition border @(selectedBrand == "Burger King" ? "bg-amber-700 text-amber-100 border-amber-700 shadow-sm" : "bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100")">
+                👑 Burger King
+            </a>
+            <a href="?brand=Mostaza&benefitType=@selectedBenefitType&search=@searchQuery&sort=@sortBy" 
+               class="px-4 py-2 rounded-lg text-sm font-semibold transition border @(selectedBrand == "Mostaza" ? "bg-rose-700 text-white border-rose-700 shadow-sm" : "bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100")">
+                🍔 Mostaza
+            </a>
+        </div>
+
+        <!-- Search & Sort Controls -->
+        <form method="get" class="flex flex-wrap sm:flex-nowrap gap-2 w-full md:w-auto items-center">
+            <input type="hidden" name="brand" value="@selectedBrand" />
+            <div class="relative w-full sm:w-64">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" name="search" value="@searchQuery" placeholder="Buscar hamburguesa, 2x1..." 
+                       class="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
+            </div>
+
+            <select name="sort" onchange="this.form.submit()" class="py-2 px-3 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                <option value="newest" selected="@(sortBy == "newest")">Más recientes</option>
+                <option value="price_asc" selected="@(sortBy == "price_asc")">Menor precio</option>
+                <option value="price_desc" selected="@(sortBy == "price_desc")">Mayor precio</option>
+            </select>
+
+            <button type="submit" class="px-4 py-2 text-sm font-medium bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition">
+                Filtrar
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Comparison Matrix / Table Section -->
+@if (Model == null || Model.Count == 0)
+{
+    <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
+        <span class="text-5xl mb-4 block">🔍</span>
+        <h3 class="text-lg font-bold text-slate-800 mb-1">No se encontraron ofertas activas</h3>
+        <p class="text-sm text-slate-500 max-w-md mx-auto mb-6">Prueba cambiando los filtros de búsqueda o presiona "Actualizar Ofertas" para que el scraper extraiga promociones en tiempo real.</p>
+        <button onclick="triggerScrape()" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-md transition">
+            <i class="fa-solid fa-arrows-rotate"></i>
+            <span>Ejecutar Scraper de Ofertas</span>
+        </button>
+    </div>
+}
+else
+{
+    <!-- Desktop Comparative Table -->
+    <div class="hidden lg:block bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-100/75 border-b border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider">
+                    <th class="py-4 px-6">Marca</th>
+                    <th class="py-4 px-6">Producto y Categoría</th>
+                    <th class="py-4 px-6 text-center">Tipo de Beneficio</th>
+                    <th class="py-4 px-6">Precio Normalizado</th>
+                    <th class="py-4 px-6">Canal / Cupón</th>
+                    <th class="py-4 px-6">Condiciones (IA)</th>
+                    <th class="py-4 px-6 text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-sm">
+                @foreach (var offer in Model)
+                {
+                    <tr class="hover:bg-slate-50/80 transition duration-150">
+                        <!-- Brand -->
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            @if (offer.Brand.Contains("McDonald"))
+                            {
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold brand-mcdonalds shadow-xs">
+                                    🍟 McDonald's
+                                </span>
+                            }
+                            else if (offer.Brand.Contains("Burger"))
+                            {
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold brand-burgerking shadow-xs">
+                                    👑 Burger King
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold brand-mostaza shadow-xs">
+                                    🍔 Mostaza
+                                </span>
+                            }
+                        </td>
+
+                        <!-- Product -->
+                        <td class="py-4 px-6">
+                            <div class="font-bold text-slate-900">@offer.Title</div>
+                            <div class="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
+                                <span class="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[11px] font-medium">@offer.Category</span>
+                                <span>Vence: @offer.ValidUntil.ToString("dd/MM/yyyy")</span>
+                            </div>
+                        </td>
+
+                        <!-- Benefit Type -->
+                        <td class="py-4 px-6 text-center">
+                            @if (offer.BenefitType == "TwoForOne")
+                            {
+                                <span class="inline-block bg-purple-100 text-purple-700 font-extrabold px-3 py-1 rounded-full text-xs border border-purple-200">
+                                    🔥 2x1
+                                </span>
+                            }
+                            else if (offer.BenefitType == "PercentageDiscount")
+                            {
+                                <span class="inline-block bg-emerald-100 text-emerald-700 font-extrabold px-3 py-1 rounded-full text-xs border border-emerald-200">
+                                    @(offer.BenefitDescription ?? "% Descuento")
+                                </span>
+                            }
+                            else if (offer.BenefitType == "FreeGift")
+                            {
+                                <span class="inline-block bg-amber-100 text-amber-700 font-extrabold px-3 py-1 rounded-full text-xs border border-amber-200">
+                                    🎁 Gratis
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="inline-block bg-blue-100 text-blue-700 font-semibold px-3 py-1 rounded-full text-xs border border-blue-200">
+                                    🏷️ @(offer.BenefitDescription ?? "Precio Especial")
+                                </span>
+                            }
+                        </td>
+
+                        <!-- Price -->
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            @if (offer.NormalizedPrice > 0)
+                            {
+                                <div class="text-lg font-black text-slate-900">$ @offer.NormalizedPrice.ToString("N0")</div>
+                                @if (offer.OriginalPrice.HasValue && offer.OriginalPrice > offer.NormalizedPrice)
+                                {
+                                    <div class="text-xs text-slate-400 line-through">$ @offer.OriginalPrice.Value.ToString("N0")</div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-sm font-extrabold text-emerald-600 uppercase">Sin Cargo</span>
+                            }
+                        </td>
+
+                        <!-- Channel & Promo Code -->
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <div class="mb-1.5">
+                                @if (offer.Channel == "App")
+                                {
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md badge-app">
+                                        <i class="fa-solid fa-mobile-screen"></i> Exclusivo App
+                                    </span>
+                                }
+                                else if (offer.Channel == "Web")
+                                {
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md badge-web">
+                                        <i class="fa-solid fa-globe"></i> Exclusivo Web
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md badge-app-web">
+                                        <i class="fa-solid fa-store"></i> App o Web
+                                    </span>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(offer.PromoCode))
+                            {
+                                <button onclick="copyCode('@offer.PromoCode', this)" 
+                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 rounded text-xs font-mono font-bold transition shadow-xs">
+                                    <i class="fa-regular fa-copy"></i>
+                                    <span>@offer.PromoCode</span>
+                                </button>
+                            }
+                            else
+                            {
+                                <span class="text-xs text-slate-400 italic">No requiere cupón</span>
+                            }
+                        </td>
+
+                        <!-- Terms & Conditions (AI Interpreted) -->
+                        <td class="py-4 px-6 text-xs text-slate-600 max-w-xs">
+                            <p class="line-clamp-2" title="@offer.TermsAndConditions">
+                                @(string.IsNullOrWhiteSpace(offer.TermsAndConditions) ? "Consumo en local o take-away." : offer.TermsAndConditions)
+                            </p>
+                        </td>
+
+                        <!-- Actions (Deep Link + Report) -->
+                        <td class="py-4 px-6 text-center whitespace-nowrap">
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="@offer.DestinationUrl" target="_blank" rel="noopener noreferrer" 
+                                   class="inline-flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs transition">
+                                    <span>Ir a la Oferta</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                                <button onclick="openReportModal(@offer.Id, '@offer.Title', '@offer.Brand')" 
+                                        title="Reportar oferta vencida o incorrecta" 
+                                        class="text-slate-400 hover:text-rose-600 p-1.5 rounded hover:bg-rose-50 transition">
+                                    <i class="fa-regular fa-flag"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View Matrix -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-4 mb-8">
+        @foreach (var offer in Model)
+        {
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        @if (offer.Brand.Contains("McDonald"))
+                        {
+                            <span class="px-2.5 py-0.5 rounded text-xs font-bold brand-mcdonalds">🍟 McDonald's</span>
+                        }
+                        else if (offer.Brand.Contains("Burger"))
+                        {
+                            <span class="px-2.5 py-0.5 rounded text-xs font-bold brand-burgerking">👑 Burger King</span>
+                        }
+                        else
+                        {
+                            <span class="px-2.5 py-0.5 rounded text-xs font-bold brand-mostaza">🍔 Mostaza</span>
+                        }
+
+                        @if (offer.BenefitType == "TwoForOne")
+                        {
+                            <span class="bg-purple-100 text-purple-700 text-xs font-black px-2 py-0.5 rounded-full">2x1</span>
+                        }
+                        else if (offer.BenefitType == "PercentageDiscount")
+                        {
+                            <span class="bg-emerald-100 text-emerald-700 text-xs font-black px-2 py-0.5 rounded-full">@(offer.BenefitDescription ?? "% OFF")</span>
+                        }
+                        else if (offer.BenefitType == "FreeGift")
+                        {
+                            <span class="bg-amber-100 text-amber-700 text-xs font-black px-2 py-0.5 rounded-full">Regalo</span>
+                        }
+                    </div>
+
+                    <h4 class="font-bold text-slate-900 text-base mb-1">@offer.Title</h4>
+                    <p class="text-xs text-slate-500 mb-3">@offer.Description</p>
+
+                    <div class="flex items-baseline gap-2 mb-3">
+                        @if (offer.NormalizedPrice > 0)
+                        {
+                            <span class="text-xl font-black text-slate-900">$ @offer.NormalizedPrice.ToString("N0")</span>
+                            @if (offer.OriginalPrice.HasValue)
+                            {
+                                <span class="text-xs text-slate-400 line-through">$ @offer.OriginalPrice.Value.ToString("N0")</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-base font-black text-emerald-600">GRATIS</span>
+                        }
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 mb-3">
+                        <span class="text-[11px] font-medium px-2 py-0.5 rounded @(offer.Channel == "App" ? "badge-app" : offer.Channel == "Web" ? "badge-web" : "badge-app-web")">
+                            @offer.Channel
+                        </span>
+                        @if (!string.IsNullOrWhiteSpace(offer.PromoCode))
+                        {
+                            <button onclick="copyCode('@offer.PromoCode', this)" class="inline-flex items-center gap-1 text-xs font-mono font-bold bg-amber-50 text-amber-800 border border-amber-300 px-2 py-0.5 rounded">
+                                <i class="fa-regular fa-copy"></i>
+                                <span>@offer.PromoCode</span>
+                            </button>
+                        }
+                    </div>
+
+                    <p class="text-xs text-slate-500 italic bg-slate-50 p-2 rounded-lg border border-slate-100 mb-4">
+                        @offer.TermsAndConditions
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                    <a href="@offer.DestinationUrl" target="_blank" rel="noopener noreferrer" 
+                       class="flex-grow text-center bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 rounded-lg transition">
+                        Ir a la Oferta Oficial <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                    </a>
+                    <button onclick="openReportModal(@offer.Id, '@offer.Title', '@offer.Brand')" 
+                            class="px-3 py-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg border border-slate-200 transition">
+                        <i class="fa-regular fa-flag"></i>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- User Report Modal (Issue 9) -->
+<div id="reportModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
+        <div class="bg-rose-600 text-white p-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <h3 class="font-bold text-base">Reportar Oferta</h3>
+            </div>
+            <button onclick="closeReportModal()" class="text-white/80 hover:text-white text-lg">&times;</button>
+        </div>
+
+        <div class="p-6">
+            <p class="text-xs text-slate-500 mb-1">Oferta seleccionada:</p>
+            <div id="reportOfferTitle" class="font-bold text-slate-800 text-sm mb-4"></div>
+
+            <form id="reportForm" onsubmit="submitReport(event)">
+                <input type="hidden" id="reportOfferId" />
+
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Motivo del reporte *</label>
+                <select id="reportReason" required class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5 mb-4 focus:outline-none focus:ring-2 focus:ring-rose-500">
+                    <option value="Expired">Oferta ya vencida o no disponible</option>
+                    <option value="WrongPrice">Precio incorrecto o diferente al pagar</option>
+                    <option value="BrokenLink">Enlace o cupón roto</option>
+                    <option value="MisleadingTerms">Condiciones o restricciones confusas</option>
+                    <option value="Other">Otro problema</option>
+                </select>
+
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Detalle o comentario adicional (opcional)</label>
+                <textarea id="reportComments" rows="3" placeholder="Describe brevemente lo ocurrido..." 
+                          class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5 mb-6 focus:outline-none focus:ring-2 focus:ring-rose-500"></textarea>
+
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeReportModal()" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="submitReportBtn" class="px-5 py-2 text-sm bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg shadow-sm transition">
+                        Enviar Reporte
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Issue 8: Copiado automático de código promocional
+        async function copyCode(code, element) {
+            try {
+                await navigator.clipboard.writeText(code);
+                const originalHtml = element.innerHTML;
+                element.innerHTML = '<i class="fa-solid fa-check text-emerald-600"></i> <span class="text-emerald-700 font-bold">¡Copiado!</span>';
+                element.classList.add('bg-emerald-50', 'border-emerald-300');
+                showToast(`¡Código ${code} copiado al portapapeles!`, true);
+                setTimeout(() => {
+                    element.innerHTML = originalHtml;
+                    element.classList.remove('bg-emerald-50', 'border-emerald-300');
+                }, 2000);
+            } catch (err) {
+                showToast(`Código: ${code}`, true);
+            }
+        }
+
+        // Issue 9: Report Modal logic
+        function openReportModal(offerId, title, brand) {
+            document.getElementById('reportOfferId').value = offerId;
+            document.getElementById('reportOfferTitle').textContent = `[${brand}] ${title}`;
+            document.getElementById('reportModal').classList.remove('hidden');
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').classList.add('hidden');
+            document.getElementById('reportForm').reset();
+        }
+
+        async function submitReport(e) {
+            e.preventDefault();
+            const offerId = parseInt(document.getElementById('reportOfferId').value);
+            const reason = document.getElementById('reportReason').value;
+            const comments = document.getElementById('reportComments').value;
+            const btn = document.getElementById('submitReportBtn');
+
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+
+            try {
+                const res = await fetch('/api/reports', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ offerId, reason, comments })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast(data.message, true);
+                    closeReportModal();
+                } else {
+                    showToast(data.message || 'Error al enviar reporte', false);
+                }
+            } catch (err) {
+                showToast('Error de conexión al enviar reporte', false);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Enviar Reporte';
+            }
+        }
+    </script>
+}
