@@ -1,100 +1,257 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-full">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Cazador de Descuentos</title>
-    <!-- Modern Tailwind & Font Awesome via CDN for lightweight single-page UI -->
+    <title>@ViewData["Title"] - Cazador de Descuentos Argentina</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        mc: {
+                            red: '#DA291C',
+                            yellow: '#FFBC0D',
+                            dark: '#9B1B12'
+                        },
+                        bk: {
+                            orange: '#D62300',
+                            flame: '#F58220',
+                            charcoal: '#27251F'
+                        },
+                        mostaza: {
+                            red: '#C8102E',
+                            wine: '#780016',
+                            gold: '#E5A823'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        .brand-mcdonalds { background-color: #DA291C; color: #FFC72C; }
-        .brand-burgerking { background-color: #D62300; color: #F5EBDC; }
-        .brand-mostaza { background-color: #C8102E; color: #FFFFFF; }
-        .badge-app { background-color: #EDE9FE; color: #6D28D9; border: 1px solid #DDD6FE; }
-        .badge-web { background-color: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }
-        .badge-app-web { background-color: #DCFCE7; color: #15803D; border: 1px solid #BBF7D0; }
+        .brand-pill-mc { background: linear-gradient(135deg, #DA291C 0%, #B91C1C 100%); color: #FFBC0D; box-shadow: 0 4px 14px 0 rgba(218, 41, 28, 0.35); }
+        .brand-pill-bk { background: linear-gradient(135deg, #D62300 0%, #9A1C00 100%); color: #FFF; box-shadow: 0 4px 14px 0 rgba(214, 35, 0, 0.35); }
+        .brand-pill-mostaza { background: linear-gradient(135deg, #C8102E 0%, #780016 100%); color: #FFF; box-shadow: 0 4px 14px 0 rgba(200, 16, 46, 0.35); }
+        
+        .card-glow {
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card-glow:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col font-sans">
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <span class="text-3xl">🍔</span>
-                <div>
-                    <a href="/" class="text-xl font-bold text-slate-800 tracking-tight hover:text-red-600 transition">Cazador de Descuentos</a>
-                    <p class="text-xs text-slate-500 font-medium">Comparador de ofertas en tiempo real: McDonald’s • Burger King • Mostaza</p>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans selection:bg-red-500 selection:text-white">
+
+    <!-- Top Announcement Bar (Live Auto-Scrape Status - Issue & User Request) -->
+    <div class="bg-slate-950 text-white border-b border-slate-800/80 px-4 py-2 text-xs">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span class="font-semibold text-slate-300">Sincronización Inteligente de Ofertas:</span>
+                <span class="text-slate-400 hidden sm:inline">Extracción automática de McDonald's, Burger King y Mostaza cada 5 minutos.</span>
+            </div>
+            
+            <div class="flex items-center gap-4 font-mono text-[11px]">
+                <div class="flex items-center gap-1.5 text-slate-300 bg-slate-900/90 px-2.5 py-1 rounded-md border border-slate-800">
+                    <i class="fa-solid fa-clock-rotate-left text-amber-400"></i>
+                    <span>Próxima extracción en:</span>
+                    <span id="countdownTimer" class="font-bold text-amber-400 text-xs">05:00</span>
+                </div>
+                <div class="flex items-center gap-1 text-emerald-400">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span class="hidden md:inline">Base sincronizada</span>
                 </div>
             </div>
-            <div class="flex items-center space-x-3">
-                <button onclick="triggerScrape()" id="scrapeBtn" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5 border border-slate-300">
-                    <i class="fa-solid fa-arrows-rotate" id="scrapeIcon"></i>
-                    <span>Actualizar Ofertas</span>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-red-500/20 text-xl group-hover:scale-105 transition-transform">
+                    🍔
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-red-600 transition-colors">
+                            Cazador<span class="text-red-600">Descuentos</span>
+                        </span>
+                        <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-red-100 text-red-700">MVP</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-medium">McDonald’s • Burger King • Mostaza en Argentina</p>
+                </div>
+            </a>
+
+            <div class="flex items-center gap-2.5">
+                <button onclick="triggerManualScrape()" id="navScrapeBtn" class="bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm shadow-red-600/30 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-arrows-rotate" id="navScrapeIcon"></i>
+                    <span class="hidden sm:inline">Actualizar Ahora</span>
                 </button>
-                <a href="/Reports" class="text-xs text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition">
-                    <i class="fa-solid fa-shield-halved mr-1"></i> Reportes
+
+                <a href="/Reports" class="text-xs text-slate-600 hover:text-slate-900 px-3 py-2 rounded-xl hover:bg-slate-100 transition font-semibold flex items-center gap-1.5 border border-slate-200">
+                    <i class="fa-solid fa-shield-halved text-slate-400"></i>
+                    <span class="hidden sm:inline">Reportes</span>
                 </a>
             </div>
         </div>
     </header>
 
+    <!-- Main Content Wrapper -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         @RenderBody()
     </main>
 
-    <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-500">
-        <div class="max-w-7xl mx-auto px-4 space-y-1">
-            <p><strong>Cazador de Descuentos MVP</strong> — Centralizador automatizado de ofertas de comida rápida en Argentina.</p>
-            <p>Precios normalizados en ARS. Los logos y nombres de marcas pertenecen a sus respectivos dueños.</p>
+    <!-- Sleek Modern Footer -->
+    <footer class="bg-slate-950 text-slate-400 border-t border-slate-900 py-10 mt-16 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">🍔</span>
+                <div>
+                    <p class="font-bold text-white text-sm">Cazador de Descuentos Argentina</p>
+                    <p class="text-slate-500">Centralizador y comparador automatizado de ofertas y cupones de comida rápida.</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4 text-slate-400">
+                <span class="inline-flex items-center gap-1"><i class="fa-solid fa-robot text-red-500"></i> IA Normalizadora</span>
+                <span class="inline-flex items-center gap-1"><i class="fa-solid fa-bolt text-amber-500"></i> Extracción cada 5m</span>
+                <span class="inline-flex items-center gap-1"><i class="fa-solid fa-shield-heart text-emerald-500"></i> Enlaces Oficiales</span>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 pt-6 border-t border-slate-900/60 text-center text-[11px] text-slate-600">
+            Los precios y condiciones corresponden a promociones activas en Argentina. Marcas, nombres y logos de McDonald's, Burger King y Mostaza son marcas registradas de sus respectivos dueños.
         </div>
     </footer>
 
-    <!-- Toast Notification Container -->
-    <div id="toast" class="fixed bottom-6 right-6 hidden bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 z-50 text-sm transition-all duration-300">
-        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
-        <span id="toastMessage">Acción completada</span>
+    <!-- Toast Notification (Floating Sleek Alert) -->
+    <div id="toast" class="fixed bottom-6 right-6 hidden bg-slate-900/95 backdrop-blur-md text-white px-4 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 z-50 text-sm border border-slate-800 transition-all duration-300">
+        <div id="toastIconWrap" class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <i id="toastIcon" class="fa-solid fa-circle-check text-base"></i>
+        </div>
+        <div>
+            <p id="toastTitle" class="font-bold text-xs text-white">Notificación</p>
+            <p id="toastMessage" class="text-xs text-slate-300">Operación exitosa</p>
+        </div>
     </div>
 
+    <!-- Global Auto-Sync & Poller Script (Every 5 minutes extraction) -->
     <script>
-        function showToast(message, isSuccess = true) {
+        let secondsRemaining = 300; // 5 minutes (300 seconds)
+        let isScrapingActive = false;
+
+        function showToast(message, isSuccess = true, title = null) {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastIconWrap = document.getElementById('toastIconWrap');
             const toastIcon = document.getElementById('toastIcon');
 
+            toastTitle.textContent = title || (isSuccess ? 'Éxito' : 'Atención');
             toastMessage.textContent = message;
-            toastIcon.className = isSuccess 
-                ? 'fa-solid fa-circle-check text-emerald-400 text-lg' 
-                : 'fa-solid fa-circle-exclamation text-rose-400 text-lg';
+
+            if (isSuccess) {
+                toastIconWrap.className = 'w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0';
+                toastIcon.className = 'fa-solid fa-circle-check text-base';
+            } else {
+                toastIconWrap.className = 'w-8 h-8 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0';
+                toastIcon.className = 'fa-solid fa-circle-exclamation text-base';
+            }
 
             toast.classList.remove('hidden');
             setTimeout(() => {
                 toast.classList.add('hidden');
-            }, 3000);
+            }, 3500);
         }
 
-        async function triggerScrape() {
-            const btn = document.getElementById('scrapeBtn');
-            const icon = document.getElementById('scrapeIcon');
-            btn.disabled = true;
-            icon.classList.add('fa-spin');
+        // Live Countdown Clock
+        function updateCountdown() {
+            const minutes = Math.floor(secondsRemaining / 60);
+            const seconds = secondsRemaining % 60;
+            const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            const timerEl = document.getElementById('countdownTimer');
+            if (timerEl) {
+                timerEl.textContent = formatted;
+            }
+
+            if (secondsRemaining <= 0) {
+                secondsRemaining = 300;
+                checkServerStatusAndAutoRefresh();
+            } else {
+                secondsRemaining--;
+            }
+        }
+
+        setInterval(updateCountdown, 1000);
+
+        // Fetch Server Status for Sync Interval
+        async function checkServerStatusAndAutoRefresh() {
+            try {
+                const res = await fetch('/api/ingestion/status');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.secondsUntilNextScrape !== undefined) {
+                        secondsRemaining = data.secondsUntilNextScrape;
+                    }
+                }
+            } catch (err) {
+                // Ignore transient errors
+            }
+        }
+
+        // Initial sync of timer
+        checkServerStatusAndAutoRefresh();
+
+        // Manual Trigger Scrape
+        async function triggerManualScrape() {
+            if (isScrapingActive) return;
+
+            const btn = document.getElementById('navScrapeBtn');
+            const icon = document.getElementById('navScrapeIcon');
+            isScrapingActive = true;
+            if (btn) btn.disabled = true;
+            if (icon) icon.classList.add('fa-spin');
+
+            showToast('Iniciando extracción de McDonald\'s, BK y Mostaza...', true, 'Extracción en vivo');
 
             try {
                 const res = await fetch('/api/ingestion/trigger-scrape', { method: 'POST' });
                 const data = await res.json();
                 if (data.success) {
-                    showToast(data.message, true);
-                    setTimeout(() => window.location.reload(), 1500);
+                    showToast(data.message, true, 'Catálogo Actualizado');
+                    secondsRemaining = 300;
+                    setTimeout(() => window.location.reload(), 1200);
                 } else {
-                    showToast('Error en la actualización', false);
+                    showToast('No se pudo completar la extracción', false, 'Error');
                 }
             } catch (err) {
-                showToast('Error al conectar con el servidor', false);
+                showToast('Error al conectar con el servidor', false, 'Error');
             } finally {
-                btn.disabled = false;
-                icon.classList.remove('fa-spin');
+                isScrapingActive = false;
+                if (btn) btn.disabled = false;
+                if (icon) icon.classList.remove('fa-spin');
             }
         }
     </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -8,7 +8,11 @@ public class ScraperBackgroundService : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<ScraperBackgroundService> _logger;
-    private readonly TimeSpan _scrapeInterval = TimeSpan.FromHours(4);
+    private readonly TimeSpan _scrapeInterval = TimeSpan.FromMinutes(5);
+
+    public static DateTime LastRunTimeUtc { get; private set; } = DateTime.UtcNow;
+    public static DateTime NextRunTimeUtc { get; private set; } = DateTime.UtcNow.AddMinutes(5);
+    public static bool IsCurrentlyRunning { get; private set; } = false;
 
     public ScraperBackgroundService(
         IServiceScopeFactory scopeFactory,
@@ -29,15 +33,22 @@ public class ScraperBackgroundService : BackgroundService
         {
             try
             {
-                _logger.LogInformation("Scheduled scraping execution started.");
+                IsCurrentlyRunning = true;
+                _logger.LogInformation("Scheduled scraping execution started (5-minute cycle).");
                 using var scope = _scopeFactory.CreateScope();
                 var scraperService = scope.ServiceProvider.GetRequiredService<IScraperService>();
                 var count = await scraperService.ScrapeAndProcessAllAsync(stoppingToken);
-                _logger.LogInformation("Scheduled scraping executed successfully. Processed {Count} offers.", count);
+                LastRunTimeUtc = DateTime.UtcNow;
+                NextRunTimeUtc = DateTime.UtcNow.Add(_scrapeInterval);
+                _logger.LogInformation("Scheduled scraping executed successfully. Processed {Count} offers. Next run at: {NextRun}", count, NextRunTimeUtc);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred during scheduled scraping execution.");
+            }
+            finally
+            {
+                IsCurrentlyRunning = false;
             }
 
             try

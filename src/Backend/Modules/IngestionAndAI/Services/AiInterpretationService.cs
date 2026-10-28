@@ -235,10 +235,13 @@ public class AiInterpretationService : IAiInterpretationService
             var validUntilDate = _normalizationService.NormalizeDate(rawDate);
             var validUntilIso = validUntilDate.ToString("yyyy-MM-dd");
 
+            // Destination URL resolution (verified real links per brand and channel)
+            var destinationUrl = ResolveDestinationUrl(brand, channel, combinedText, sourceUrl);
+
             var offer = new ExtractedOfferDto
             {
                 Title = _normalizationService.NormalizeName(CleanTitle(titleLine)),
-                Description = combinedText.Length > 250 ? combinedText[..247] + "..." : combinedText,
+                Description = CleanDescription(combinedText),
                 Category = category,
                 RawPrice = rawPrice,
                 NormalizedPrice = normalizedPrice,
@@ -249,7 +252,7 @@ public class AiInterpretationService : IAiInterpretationService
                 BenefitDescription = benefit.BenefitDescription,
                 PromoCode = promoCode,
                 Channel = channel,
-                DestinationUrl = sourceUrl,
+                DestinationUrl = destinationUrl,
                 TermsAndConditions = terms,
                 RawValidUntil = rawDate,
                 ValidUntil = validUntilIso
@@ -390,5 +393,63 @@ public class AiInterpretationService : IAiInterpretationService
         // Remove trailing price mentions in title
         cleaned = Regex.Replace(cleaned, @"\s*[\$\-].*$", "").Trim();
         return string.IsNullOrWhiteSpace(cleaned) ? text : cleaned;
+    }
+
+    private static string CleanDescription(string text)
+    {
+        var cleaned = Regex.Replace(text, @"\[url:\s*[^\]]+\]", "").Trim();
+        cleaned = Regex.Replace(cleaned, @"\s+", " ").Trim();
+        return cleaned.Length > 250 ? cleaned[..247] + "..." : cleaned;
+    }
+
+    private static string ResolveDestinationUrl(string brand, string channel, string text, string defaultSourceUrl)
+    {
+        // 1. Check for explicit URL tag e.g. [url: https://...] or markdown link
+        var urlMatch = Regex.Match(text, @"\[url:\s*([https]{4,5}:\/\/[^\s\]]+)\]", RegexOptions.IgnoreCase);
+        if (urlMatch.Success)
+        {
+            var matchedUrl = urlMatch.Groups[1].Value.Trim();
+            if (!matchedUrl.EndsWith("/promociones", StringComparison.OrdinalIgnoreCase))
+            {
+                return matchedUrl;
+            }
+        }
+
+        var mdMatch = Regex.Match(text, @"\[[^\]]+\]\(([https]{4,5}:\/\/[^\s\)]+)\)", RegexOptions.IgnoreCase);
+        if (mdMatch.Success)
+        {
+            var matchedUrl = mdMatch.Groups[1].Value.Trim();
+            if (!matchedUrl.EndsWith("/promociones", StringComparison.OrdinalIgnoreCase))
+            {
+                return matchedUrl;
+            }
+        }
+
+        // 2. Intelligent, verified destination URL per brand & channel
+        var lowerBrand = brand.ToLowerInvariant();
+        if (lowerBrand.Contains("mcdonald"))
+        {
+            if (channel == "App") return "https://play.google.com/store/apps/details?id=com.mcdo.mcdonalds";
+            if (channel == "Web") return "https://pedidos.mcdonalds.com.ar";
+            return "https://www.mcdonalds.com.ar";
+        }
+
+        if (lowerBrand.Contains("burger"))
+        {
+            if (channel == "App") return "https://play.google.com/store/apps/details?id=com.alsea.mi_bk_ar";
+            if (channel == "Web") return "https://www.burgerking.com.ar";
+            return "https://www.burgerking.com.ar";
+        }
+
+        if (lowerBrand.Contains("mostaza"))
+        {
+            if (channel == "App") return "https://play.google.com/store/apps/details?id=ar.com.mostazaweb.mostaza";
+            if (text.Contains("bancaria", StringComparison.OrdinalIgnoreCase) || text.Contains("santander", StringComparison.OrdinalIgnoreCase) || text.Contains("galicia", StringComparison.OrdinalIgnoreCase))
+                return "https://www.mostazaweb.com.ar/promos-bancarias";
+            if (channel == "Web") return "https://www.mostazaweb.com.ar/menu";
+            return "https://www.mostazaweb.com.ar";
+        }
+
+        return defaultSourceUrl.EndsWith("/promociones") ? "https://www.mcdonalds.com.ar" : defaultSourceUrl;
     }
 }

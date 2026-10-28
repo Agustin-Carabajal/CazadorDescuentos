@@ -36,6 +36,23 @@ public class IngestionController : ControllerBase
         });
     }
 
+    [HttpGet("status")]
+    public async Task<IActionResult> GetStatusAsync(CancellationToken cancellationToken)
+    {
+        var totalActive = await _context.Offers.CountAsync(o => o.IsActive, cancellationToken);
+        var secondsUntilNext = (int)Math.Max(0, (ScraperBackgroundService.NextRunTimeUtc - DateTime.UtcNow).TotalSeconds);
+
+        return Ok(new
+        {
+            lastRunUtc = ScraperBackgroundService.LastRunTimeUtc,
+            nextRunUtc = ScraperBackgroundService.NextRunTimeUtc,
+            intervalMinutes = 5,
+            secondsUntilNextScrape = secondsUntilNext,
+            isCurrentlyScraping = ScraperBackgroundService.IsCurrentlyRunning,
+            totalActiveOffers = totalActive
+        });
+    }
+
     [HttpGet("scrapes")]
     public async Task<IActionResult> GetScrapesAsync(CancellationToken cancellationToken)
     {

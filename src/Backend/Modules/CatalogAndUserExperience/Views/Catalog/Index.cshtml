@@ -1,227 +1,561 @@
 @model List<CazadorDescuentos.Modules.CatalogAndUserExperience.Models.OfferResponseDto>
 @{
-    ViewData["Title"] = "Comparador de Ofertas";
-    var selectedBrand = ViewBag.SelectedBrand as string ?? "all";
-    var selectedBenefitType = ViewBag.SelectedBenefitType as string ?? "all";
-    var searchQuery = ViewBag.SearchQuery as string ?? "";
-    var sortBy = ViewBag.SortBy as string ?? "newest";
+    ViewData["Title"] = "Cazador de Descuentos - Las Mejores Ofertas de Hoy";
+    var offers = Model ?? new List<CazadorDescuentos.Modules.CatalogAndUserExperience.Models.OfferResponseDto>();
+    var totalOffers = offers.Count;
+    var mcCount = offers.Count(o => o.Brand.Contains("McDonald"));
+    var bkCount = offers.Count(o => o.Brand.Contains("Burger"));
+    var mostazaCount = offers.Count(o => o.Brand.Contains("Mostaza"));
 }
 
-<!-- Hero & Filter Header -->
-<div class="mb-8">
-    <div class="bg-gradient-to-r from-red-600 via-amber-600 to-yellow-500 rounded-2xl p-6 text-white shadow-lg mb-6">
-        <h1 class="text-2xl sm:text-3xl font-black tracking-tight mb-2">Compara las Mejores Ofertas de Hoy</h1>
-        <p class="text-white/90 text-sm max-w-2xl">
-            Encuentra combos, 2x1 y descuentos en <strong>McDonald's, Burger King y Mostaza</strong> actualizados automáticamente con IA. Copia el cupón y ahorra al instante.
-        </p>
-    </div>
-
-    <!-- Filters & Search Toolbar -->
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 items-center justify-between">
-        <!-- Brand Pills -->
-        <div class="flex flex-wrap gap-2 w-full md:w-auto">
-            <a href="?brand=all&benefitType=@selectedBenefitType&search=@searchQuery&sort=@sortBy" 
-               class="px-4 py-2 rounded-lg text-sm font-semibold transition border @(selectedBrand == "all" ? "bg-slate-900 text-white border-slate-900 shadow-sm" : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100")">
-                Todas (@Model.Count)
-            </a>
-            <a href="?brand=McDonald's&benefitType=@selectedBenefitType&search=@searchQuery&sort=@sortBy" 
-               class="px-4 py-2 rounded-lg text-sm font-semibold transition border @(selectedBrand == "McDonald's" ? "bg-red-600 text-yellow-300 border-red-600 shadow-sm" : "bg-red-50 text-red-700 border-red-200 hover:bg-red-100")">
-                🍟 McDonald's
-            </a>
-            <a href="?brand=Burger King&benefitType=@selectedBenefitType&search=@searchQuery&sort=@sortBy" 
-               class="px-4 py-2 rounded-lg text-sm font-semibold transition border @(selectedBrand == "Burger King" ? "bg-amber-700 text-amber-100 border-amber-700 shadow-sm" : "bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100")">
-                👑 Burger King
-            </a>
-            <a href="?brand=Mostaza&benefitType=@selectedBenefitType&search=@searchQuery&sort=@sortBy" 
-               class="px-4 py-2 rounded-lg text-sm font-semibold transition border @(selectedBrand == "Mostaza" ? "bg-rose-700 text-white border-rose-700 shadow-sm" : "bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100")">
-                🍔 Mostaza
-            </a>
+<!-- Hero Section with Fast Food Brand Highlights -->
+<div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-red-950 text-white shadow-2xl mb-8 p-6 sm:p-10 border border-slate-800">
+    <div class="relative z-10 max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600/30 border border-red-500/40 text-red-300 text-xs font-bold mb-4 backdrop-blur-sm">
+            <span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+            COMPARADOR AUTOMATIZADO CON IA EN ARGENTINA
         </div>
 
-        <!-- Search & Sort Controls -->
-        <form method="get" class="flex flex-wrap sm:flex-nowrap gap-2 w-full md:w-auto items-center">
-            <input type="hidden" name="brand" value="@selectedBrand" />
-            <div class="relative w-full sm:w-64">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" name="search" value="@searchQuery" placeholder="Buscar hamburguesa, 2x1..." 
-                       class="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" />
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight mb-4">
+            Caza las mejores ofertas en <br class="hidden sm:inline" />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-300 to-red-400">
+                McDonald's, BK y Mostaza
+            </span>
+        </h1>
+
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6 max-w-2xl">
+            Comparamos en tiempo real combos, 2x1, cupones y beneficios. Precios normalizados en pesos argentinos, con enlaces oficiales verificados y copiado rápido de cupón en un clic.
+        </p>
+
+        <!-- Stats Counter Bar -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800/80">
+            <div class="bg-slate-900/60 backdrop-blur-sm p-3 rounded-2xl border border-slate-800">
+                <p class="text-[11px] text-slate-400 font-medium">Ofertas Activas</p>
+                <p class="text-xl sm:text-2xl font-black text-amber-400">@totalOffers</p>
+            </div>
+            <div class="bg-slate-900/60 backdrop-blur-sm p-3 rounded-2xl border border-slate-800">
+                <p class="text-[11px] text-slate-400 font-medium">Ahorro Máximo</p>
+                <p class="text-xl sm:text-2xl font-black text-emerald-400">Hasta 50%</p>
+            </div>
+            <div class="bg-slate-900/60 backdrop-blur-sm p-3 rounded-2xl border border-slate-800">
+                <p class="text-[11px] text-slate-400 font-medium">Sincronización</p>
+                <p class="text-xl sm:text-2xl font-black text-sky-400">Cada 5 min</p>
+            </div>
+            <div class="bg-slate-900/60 backdrop-blur-sm p-3 rounded-2xl border border-slate-800">
+                <p class="text-[11px] text-slate-400 font-medium">Marcas Líderes</p>
+                <p class="text-xl sm:text-2xl font-black text-rose-400">3 Cadenas</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Decorative background elements -->
+    <div class="absolute -right-10 -bottom-10 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute right-20 top-10 w-72 h-72 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+</div>
+
+<!-- Interactive Filter & Search Control Panel -->
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 mb-8">
+    <div class="flex flex-col gap-4">
+
+        <!-- Row 1: Brand Tabs & View Mode Switcher -->
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+            
+            <!-- Brand Tabs -->
+            <div class="flex flex-wrap items-center gap-2" id="brandTabs">
+                <button type="button" onclick="setBrandFilter('all')" data-brand="all"
+                        class="brand-tab-btn active px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 bg-slate-900 text-white shadow-sm">
+                    <span>Todas las Cadenas</span>
+                    <span class="bg-white/20 text-white text-[11px] px-2 py-0.5 rounded-full font-mono">@totalOffers</span>
+                </button>
+
+                <button type="button" onclick="setBrandFilter('McDonald\'s')" data-brand="McDonald's"
+                        class="brand-tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 bg-slate-50 text-slate-700 hover:bg-red-50 hover:text-red-700 border border-slate-200">
+                    <span class="text-base">🍟</span>
+                    <span>McDonald's</span>
+                    <span class="bg-red-100 text-red-800 text-[11px] px-2 py-0.5 rounded-full font-mono">@mcCount</span>
+                </button>
+
+                <button type="button" onclick="setBrandFilter('Burger King')" data-brand="Burger King"
+                        class="brand-tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 bg-slate-50 text-slate-700 hover:bg-amber-50 hover:text-amber-800 border border-slate-200">
+                    <span class="text-base">👑</span>
+                    <span>Burger King</span>
+                    <span class="bg-amber-100 text-amber-800 text-[11px] px-2 py-0.5 rounded-full font-mono">@bkCount</span>
+                </button>
+
+                <button type="button" onclick="setBrandFilter('Mostaza')" data-brand="Mostaza"
+                        class="brand-tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 bg-slate-50 text-slate-700 hover:bg-rose-50 hover:text-rose-800 border border-slate-200">
+                    <span class="text-base">🍔</span>
+                    <span>Mostaza</span>
+                    <span class="bg-rose-100 text-rose-800 text-[11px] px-2 py-0.5 rounded-full font-mono">@mostazaCount</span>
+                </button>
             </div>
 
-            <select name="sort" onchange="this.form.submit()" class="py-2 px-3 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
-                <option value="newest" selected="@(sortBy == "newest")">Más recientes</option>
-                <option value="price_asc" selected="@(sortBy == "price_asc")">Menor precio</option>
-                <option value="price_desc" selected="@(sortBy == "price_desc")">Mayor precio</option>
-            </select>
+            <!-- View Mode Switcher -->
+            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl self-start lg:self-auto border border-slate-200">
+                <button type="button" onclick="setViewMode('cards')" id="viewModeCardsBtn"
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-white text-slate-900 shadow-xs">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                    <span>Tarjetas</span>
+                </button>
+                <button type="button" onclick="setViewMode('table')" id="viewModeTableBtn"
+                        class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-500 hover:text-slate-900">
+                    <i class="fa-solid fa-table-list"></i>
+                    <span>Tabla Comparativa</span>
+                </button>
+            </div>
+        </div>
 
-            <button type="submit" class="px-4 py-2 text-sm font-medium bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition">
-                Filtrar
+        <!-- Row 2: Category Chips Carousel -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs" id="categoryChips">
+            <button onclick="setCategoryFilter('all')" data-cat="all" class="cat-chip active shrink-0 px-3 py-1.5 rounded-lg font-semibold bg-red-600 text-white">
+                Todas las categorías
             </button>
-        </form>
+            <button onclick="setCategoryFilter('Combo')" data-cat="Combo" class="cat-chip shrink-0 px-3 py-1.5 rounded-lg font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">
+                🍔 Combos
+            </button>
+            <button onclick="setCategoryFilter('Hamburguesa')" data-cat="Hamburguesa" class="cat-chip shrink-0 px-3 py-1.5 rounded-lg font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">
+                🥩 Hamburguesas
+            </button>
+            <button onclick="setCategoryFilter('Postre')" data-cat="Postre" class="cat-chip shrink-0 px-3 py-1.5 rounded-lg font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">
+                🍦 Postres y Helados
+            </button>
+            <button onclick="setCategoryFilter('Pollo')" data-cat="Pollo" class="cat-chip shrink-0 px-3 py-1.5 rounded-lg font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">
+                🍗 Pollo Crispy
+            </button>
+            <button onclick="setCategoryFilter('Papas y Snacks')" data-cat="Papas y Snacks" class="cat-chip shrink-0 px-3 py-1.5 rounded-lg font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">
+                🍟 Papas y Snacks
+            </button>
+            <button onclick="setCategoryFilter('Desayuno y Merienda')" data-cat="Desayuno y Merienda" class="cat-chip shrink-0 px-3 py-1.5 rounded-lg font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">
+                ☕ Desayuno y Café
+            </button>
+        </div>
+
+        <!-- Row 3: Instant Search, Benefit Type & Sort -->
+        <div class="flex flex-col md:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100">
+            <!-- Search Input with Instant Client Filter -->
+            <div class="relative w-full md:w-80">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Buscar por producto, cupón o beneficio..."
+                       class="w-full pl-9 pr-8 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white transition" />
+                <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+
+            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full md:w-auto">
+                <!-- Benefit Filter -->
+                <select id="benefitFilter" onchange="applyFilters()" class="text-xs sm:text-sm py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-medium">
+                    <option value="all">Todos los beneficios</option>
+                    <option value="TwoForOne">🔥 2x1</option>
+                    <option value="PercentageDiscount">🏷️ % de Descuento</option>
+                    <option value="FreeGift">🎁 Regalos Gratis</option>
+                    <option value="FixedAmount">💵 Precio Especial</option>
+                </select>
+
+                <!-- Channel Filter -->
+                <select id="channelFilter" onchange="applyFilters()" class="text-xs sm:text-sm py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-medium">
+                    <option value="all">Todos los canales</option>
+                    <option value="App">📱 Solo App</option>
+                    <option value="Web">🌐 Solo Web</option>
+                </select>
+
+                <!-- Sort Selector -->
+                <select id="sortSelector" onchange="applyFilters()" class="text-xs sm:text-sm py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 font-medium">
+                    <option value="price_asc">Menor precio</option>
+                    <option value="discount_desc">Mayor descuento</option>
+                    <option value="price_desc">Mayor precio</option>
+                    <option value="brand">Por marca</option>
+                </select>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<!-- Comparison Matrix / Table Section -->
-@if (Model == null || Model.Count == 0)
-{
-    <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
-        <span class="text-5xl mb-4 block">🔍</span>
-        <h3 class="text-lg font-bold text-slate-800 mb-1">No se encontraron ofertas activas</h3>
-        <p class="text-sm text-slate-500 max-w-md mx-auto mb-6">Prueba cambiando los filtros de búsqueda o presiona "Actualizar Ofertas" para que el scraper extraiga promociones en tiempo real.</p>
-        <button onclick="triggerScrape()" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-md transition">
-            <i class="fa-solid fa-arrows-rotate"></i>
-            <span>Ejecutar Scraper de Ofertas</span>
-        </button>
+<!-- Active Offers Count Indicator -->
+<div class="flex items-center justify-between mb-4 px-1 text-xs text-slate-500 font-medium">
+    <div>
+        Mostrando <span id="visibleOffersCount" class="font-bold text-slate-800">@totalOffers</span> de @totalOffers ofertas disponibles
     </div>
-}
-else
-{
-    <!-- Desktop Comparative Table -->
-    <div class="hidden lg:block bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
-        <table class="w-full text-left border-collapse">
+    <div class="flex items-center gap-1.5 text-emerald-600 font-semibold">
+        <i class="fa-solid fa-bolt-lightning text-xs"></i>
+        <span>Actualización cada 5 min activa</span>
+    </div>
+</div>
+
+<!-- Empty State Container -->
+<div id="noResultsState" class="hidden bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-sm">
+    <div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-3xl mx-auto mb-4">
+        🔍
+    </div>
+    <h3 class="text-lg font-bold text-slate-800 mb-1">No se encontraron ofertas con estos filtros</h3>
+    <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mb-6">Prueba cambiando la cadena seleccionada, eliminando palabras de la búsqueda o presionando el botón para extraer promociones frescas.</p>
+    <button onclick="resetAllFilters()" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-md transition">
+        <i class="fa-solid fa-arrow-rotate-left"></i>
+        <span>Restablecer Filtros</span>
+    </button>
+</div>
+
+<!-- 1. GRID VIEW (Modern Cards) -->
+<div id="cardsView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+    @foreach (var offer in offers)
+    {
+        var isMc = offer.Brand.Contains("McDonald");
+        var isBk = offer.Brand.Contains("Burger");
+        var isMostaza = offer.Brand.Contains("Mostaza");
+        
+        var discountAmount = (offer.OriginalPrice.HasValue && offer.OriginalPrice > offer.NormalizedPrice)
+            ? offer.OriginalPrice.Value - offer.NormalizedPrice
+            : 0;
+            
+        var discountPercent = (offer.OriginalPrice.HasValue && offer.OriginalPrice > offer.NormalizedPrice && offer.OriginalPrice.Value > 0)
+            ? (int)Math.Round((1.0 - ((double)offer.NormalizedPrice / offer.OriginalPrice.Value)) * 100)
+            : 0;
+
+        <div class="offer-item card-glow bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 flex flex-col justify-between overflow-hidden relative"
+             data-brand="@offer.Brand"
+             data-category="@offer.Category"
+             data-benefit="@offer.BenefitType"
+             data-channel="@offer.Channel"
+             data-price="@offer.NormalizedPrice"
+             data-discount="@discountPercent"
+             data-search="@($"{offer.Brand} {offer.Title} {offer.Category} {offer.PromoCode} {offer.BenefitDescription}".ToLowerInvariant())">
+
+            <!-- Card Top Header -->
+            <div>
+                <div class="flex items-center justify-between gap-2 mb-3">
+                    <!-- Brand Pill -->
+                    @if (isMc)
+                    {
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-extrabold brand-pill-mc">
+                            <span>🍟</span>
+                            <span>McDonald's</span>
+                        </span>
+                    }
+                    else if (isBk)
+                    {
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-extrabold brand-pill-bk">
+                            <span>👑</span>
+                            <span>Burger King</span>
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-extrabold brand-pill-mostaza">
+                            <span>🍔</span>
+                            <span>Mostaza</span>
+                        </span>
+                    }
+
+                    <!-- Channel Badge (Issue 8) -->
+                    <div>
+                        @if (offer.Channel == "App")
+                        {
+                            <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 border border-purple-200">
+                                <i class="fa-solid fa-mobile-screen"></i> Exclusivo App
+                            </span>
+                        }
+                        else if (offer.Channel == "Web")
+                        {
+                            <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-sky-100 text-sky-800 border border-sky-200">
+                                <i class="fa-solid fa-globe"></i> Exclusivo Web
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                <i class="fa-solid fa-store"></i> App o Web
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Product Title & Category -->
+                <div class="mb-2">
+                    <span class="inline-block text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-600 mb-1">
+                        @offer.Category
+                    </span>
+                    <h3 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+                        @offer.Title
+                    </h3>
+                </div>
+
+                <!-- Short Description -->
+                <p class="text-xs text-slate-500 line-clamp-2 mb-4 leading-relaxed">
+                    @offer.Description
+                </p>
+
+                <!-- Pricing & Benefit Box -->
+                <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-100 mb-4">
+                    <div class="flex items-baseline justify-between mb-1.5">
+                        <div class="flex items-baseline gap-2">
+                            @if (offer.NormalizedPrice > 0)
+                            {
+                                <span class="text-2xl font-black text-slate-950 font-mono tracking-tight">
+                                    $ @offer.NormalizedPrice.ToString("N0")
+                                </span>
+                                @if (offer.OriginalPrice.HasValue && offer.OriginalPrice.Value > offer.NormalizedPrice)
+                                {
+                                    <span class="text-xs text-slate-400 line-through font-mono">
+                                        $ @offer.OriginalPrice.Value.ToString("N0")
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-2xl font-black text-emerald-600 uppercase tracking-tight">
+                                    ¡Gratis!
+                                </span>
+                            }
+                        </div>
+
+                        <!-- Benefit Pill (Issue 4) -->
+                        <div>
+                            @if (offer.BenefitType == "TwoForOne")
+                            {
+                                <span class="inline-flex items-center gap-1 bg-purple-600 text-white font-extrabold px-2.5 py-0.5 rounded-md text-xs shadow-xs">
+                                    🔥 2x1
+                                </span>
+                            }
+                            else if (offer.BenefitType == "PercentageDiscount")
+                            {
+                                <span class="inline-flex items-center gap-1 bg-emerald-600 text-white font-extrabold px-2.5 py-0.5 rounded-md text-xs shadow-xs">
+                                    @(offer.BenefitDescription ?? $"{discountPercent}% OFF")
+                                </span>
+                            }
+                            else if (offer.BenefitType == "FreeGift")
+                            {
+                                <span class="inline-flex items-center gap-1 bg-amber-500 text-slate-950 font-black px-2.5 py-0.5 rounded-md text-xs shadow-xs">
+                                    🎁 Regalo
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="inline-flex items-center gap-1 bg-blue-600 text-white font-bold px-2 py-0.5 rounded-md text-[11px] shadow-xs">
+                                    🏷️ @(offer.BenefitDescription ?? "Especial")
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    @if (discountAmount > 0)
+                    {
+                        <div class="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
+                            <i class="fa-solid fa-piggy-bank"></i>
+                            <span>Ahorrás $ @discountAmount.ToString("N0") con esta promoción</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Promo Code Box (Issue 8) -->
+                <div class="mb-3">
+                    @if (!string.IsNullOrWhiteSpace(offer.PromoCode))
+                    {
+                        <div class="flex items-center justify-between bg-amber-50/70 border border-dashed border-amber-300 rounded-xl p-2.5">
+                            <div>
+                                <p class="text-[10px] font-bold text-amber-900/70 uppercase tracking-wider">CÓDIGO DE CUPÓN</p>
+                                <span class="font-mono font-black text-sm text-amber-950">@offer.PromoCode</span>
+                            </div>
+                            <button type="button" onclick="copyPromoCode('@offer.PromoCode', this)"
+                                    class="copy-btn px-3 py-1.5 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 rounded-lg text-xs font-bold transition shadow-xs flex items-center gap-1.5">
+                                <i class="fa-regular fa-copy"></i>
+                                <span>Copiar</span>
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="flex items-center gap-1.5 text-slate-400 text-xs italic py-1 px-2 bg-slate-50 rounded-lg border border-slate-100">
+                            <i class="fa-solid fa-ticket text-slate-300"></i>
+                            <span>No requiere cupón adicional</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- AI Interpreted Terms & Conditions (Issue 3) -->
+                @if (!string.IsNullOrWhiteSpace(offer.TermsAndConditions))
+                {
+                    <div class="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-100 mb-4 flex items-start gap-2">
+                        <i class="fa-solid fa-circle-info text-slate-400 mt-0.5 shrink-0 text-xs"></i>
+                        <span class="line-clamp-2" title="@offer.TermsAndConditions">@offer.TermsAndConditions</span>
+                    </div>
+                }
+            </div>
+
+            <!-- Card Bottom Action Row (Issue 7 & Issue 9) -->
+            <div class="pt-3 border-t border-slate-100 flex items-center gap-2">
+                <!-- Verified Deep Link (Issue 7) -->
+                <a href="@offer.DestinationUrl" target="_blank" rel="noopener noreferrer"
+                   class="flex-grow text-center text-xs font-bold py-2.5 px-4 rounded-xl text-white transition-all shadow-sm flex items-center justify-center gap-1.5 @(isMc ? "bg-red-600 hover:bg-red-700 shadow-red-600/20" : isBk ? "bg-amber-700 hover:bg-amber-800 shadow-amber-700/20" : "bg-rose-700 hover:bg-rose-800 shadow-rose-700/20")">
+                    <span>Ir a la Oferta Oficial</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                </a>
+
+                <!-- Report Button (Issue 9) -->
+                <button type="button" onclick="openReportModal(@offer.Id, '@offer.Title', '@offer.Brand')"
+                        title="Reportar anomalía o vencimiento"
+                        class="px-3 py-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-slate-200 transition">
+                    <i class="fa-regular fa-flag text-xs"></i>
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- 2. TABLE VIEW (Comparative Matrix - Issue 6) -->
+<div id="tableView" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden mb-12">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs sm:text-sm">
             <thead>
-                <tr class="bg-slate-100/75 border-b border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider">
-                    <th class="py-4 px-6">Marca</th>
-                    <th class="py-4 px-6">Producto y Categoría</th>
-                    <th class="py-4 px-6 text-center">Tipo de Beneficio</th>
-                    <th class="py-4 px-6">Precio Normalizado</th>
-                    <th class="py-4 px-6">Canal / Cupón</th>
-                    <th class="py-4 px-6">Condiciones (IA)</th>
-                    <th class="py-4 px-6 text-center">Acciones</th>
+                <tr class="bg-slate-900 text-white text-xs font-bold uppercase tracking-wider">
+                    <th class="py-4 px-5">Marca</th>
+                    <th class="py-4 px-5">Producto & Categoría</th>
+                    <th class="py-4 px-5 text-center">Beneficio</th>
+                    <th class="py-4 px-5">Precio Normalizado</th>
+                    <th class="py-4 px-5">Canal / Cupón</th>
+                    <th class="py-4 px-5">Condiciones (IA)</th>
+                    <th class="py-4 px-5 text-center">Acciones</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100 text-sm">
-                @foreach (var offer in Model)
+            <tbody class="divide-y divide-slate-100" id="tableBody">
+                @foreach (var offer in offers)
                 {
-                    <tr class="hover:bg-slate-50/80 transition duration-150">
+                    var isMc = offer.Brand.Contains("McDonald");
+                    var isBk = offer.Brand.Contains("Burger");
+
+                    <tr class="offer-item hover:bg-slate-50 transition"
+                        data-brand="@offer.Brand"
+                        data-category="@offer.Category"
+                        data-benefit="@offer.BenefitType"
+                        data-channel="@offer.Channel"
+                        data-price="@offer.NormalizedPrice"
+                        data-search="@($"{offer.Brand} {offer.Title} {offer.Category} {offer.PromoCode}".ToLowerInvariant())">
+                        
                         <!-- Brand -->
-                        <td class="py-4 px-6 whitespace-nowrap">
-                            @if (offer.Brand.Contains("McDonald"))
+                        <td class="py-4 px-5 whitespace-nowrap">
+                            @if (isMc)
                             {
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold brand-mcdonalds shadow-xs">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-extrabold brand-pill-mc">
                                     🍟 McDonald's
                                 </span>
                             }
-                            else if (offer.Brand.Contains("Burger"))
+                            else if (isBk)
                             {
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold brand-burgerking shadow-xs">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-extrabold brand-pill-bk">
                                     👑 Burger King
                                 </span>
                             }
                             else
                             {
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold brand-mostaza shadow-xs">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-extrabold brand-pill-mostaza">
                                     🍔 Mostaza
                                 </span>
                             }
                         </td>
 
                         <!-- Product -->
-                        <td class="py-4 px-6">
+                        <td class="py-4 px-5">
                             <div class="font-bold text-slate-900">@offer.Title</div>
-                            <div class="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
-                                <span class="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[11px] font-medium">@offer.Category</span>
+                            <div class="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5">
+                                <span class="bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-medium">@offer.Category</span>
                                 <span>Vence: @offer.ValidUntil.ToString("dd/MM/yyyy")</span>
                             </div>
                         </td>
 
-                        <!-- Benefit Type -->
-                        <td class="py-4 px-6 text-center">
+                        <!-- Benefit -->
+                        <td class="py-4 px-5 text-center whitespace-nowrap">
                             @if (offer.BenefitType == "TwoForOne")
                             {
-                                <span class="inline-block bg-purple-100 text-purple-700 font-extrabold px-3 py-1 rounded-full text-xs border border-purple-200">
+                                <span class="inline-block bg-purple-100 text-purple-700 font-extrabold px-2.5 py-1 rounded-full text-xs">
                                     🔥 2x1
                                 </span>
                             }
                             else if (offer.BenefitType == "PercentageDiscount")
                             {
-                                <span class="inline-block bg-emerald-100 text-emerald-700 font-extrabold px-3 py-1 rounded-full text-xs border border-emerald-200">
-                                    @(offer.BenefitDescription ?? "% Descuento")
+                                <span class="inline-block bg-emerald-100 text-emerald-700 font-extrabold px-2.5 py-1 rounded-full text-xs">
+                                    @(offer.BenefitDescription ?? "% OFF")
                                 </span>
                             }
                             else if (offer.BenefitType == "FreeGift")
                             {
-                                <span class="inline-block bg-amber-100 text-amber-700 font-extrabold px-3 py-1 rounded-full text-xs border border-amber-200">
+                                <span class="inline-block bg-amber-100 text-amber-700 font-extrabold px-2.5 py-1 rounded-full text-xs">
                                     🎁 Gratis
                                 </span>
                             }
                             else
                             {
-                                <span class="inline-block bg-blue-100 text-blue-700 font-semibold px-3 py-1 rounded-full text-xs border border-blue-200">
-                                    🏷️ @(offer.BenefitDescription ?? "Precio Especial")
+                                <span class="inline-block bg-blue-100 text-blue-700 font-semibold px-2.5 py-1 rounded-full text-xs">
+                                    🏷️ @(offer.BenefitDescription ?? "Especial")
                                 </span>
                             }
                         </td>
 
                         <!-- Price -->
-                        <td class="py-4 px-6 whitespace-nowrap">
+                        <td class="py-4 px-5 whitespace-nowrap">
                             @if (offer.NormalizedPrice > 0)
                             {
-                                <div class="text-lg font-black text-slate-900">$ @offer.NormalizedPrice.ToString("N0")</div>
+                                <div class="font-mono font-black text-slate-900 text-base">
+                                    $ @offer.NormalizedPrice.ToString("N0")
+                                </div>
                                 @if (offer.OriginalPrice.HasValue && offer.OriginalPrice > offer.NormalizedPrice)
                                 {
-                                    <div class="text-xs text-slate-400 line-through">$ @offer.OriginalPrice.Value.ToString("N0")</div>
+                                    <div class="text-xs text-slate-400 line-through font-mono">
+                                        $ @offer.OriginalPrice.Value.ToString("N0")
+                                    </div>
                                 }
                             }
                             else
                             {
-                                <span class="text-sm font-extrabold text-emerald-600 uppercase">Sin Cargo</span>
+                                <span class="text-xs font-black text-emerald-600 uppercase">Sin Cargo</span>
                             }
                         </td>
 
                         <!-- Channel & Promo Code -->
-                        <td class="py-4 px-6 whitespace-nowrap">
-                            <div class="mb-1.5">
+                        <td class="py-4 px-5 whitespace-nowrap">
+                            <div class="mb-1 text-xs">
                                 @if (offer.Channel == "App")
                                 {
-                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md badge-app">
-                                        <i class="fa-solid fa-mobile-screen"></i> Exclusivo App
-                                    </span>
+                                    <span class="text-purple-700 font-bold"><i class="fa-solid fa-mobile-screen"></i> App</span>
                                 }
                                 else if (offer.Channel == "Web")
                                 {
-                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md badge-web">
-                                        <i class="fa-solid fa-globe"></i> Exclusivo Web
-                                    </span>
+                                    <span class="text-sky-700 font-bold"><i class="fa-solid fa-globe"></i> Web</span>
                                 }
                                 else
                                 {
-                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md badge-app-web">
-                                        <i class="fa-solid fa-store"></i> App o Web
-                                    </span>
+                                    <span class="text-emerald-700 font-bold"><i class="fa-solid fa-store"></i> App/Web</span>
                                 }
                             </div>
-
                             @if (!string.IsNullOrWhiteSpace(offer.PromoCode))
                             {
-                                <button onclick="copyCode('@offer.PromoCode', this)" 
-                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 rounded text-xs font-mono font-bold transition shadow-xs">
+                                <button type="button" onclick="copyPromoCode('@offer.PromoCode', this)"
+                                        class="copy-btn inline-flex items-center gap-1 font-mono text-xs font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-300">
                                     <i class="fa-regular fa-copy"></i>
                                     <span>@offer.PromoCode</span>
                                 </button>
                             }
                             else
                             {
-                                <span class="text-xs text-slate-400 italic">No requiere cupón</span>
+                                <span class="text-slate-400 italic text-xs">Sin cupón</span>
                             }
                         </td>
 
-                        <!-- Terms & Conditions (AI Interpreted) -->
-                        <td class="py-4 px-6 text-xs text-slate-600 max-w-xs">
+                        <!-- Conditions -->
+                        <td class="py-4 px-5 text-xs text-slate-600 max-w-xs">
                             <p class="line-clamp-2" title="@offer.TermsAndConditions">
                                 @(string.IsNullOrWhiteSpace(offer.TermsAndConditions) ? "Consumo en local o take-away." : offer.TermsAndConditions)
                             </p>
                         </td>
 
-                        <!-- Actions (Deep Link + Report) -->
-                        <td class="py-4 px-6 text-center whitespace-nowrap">
+                        <!-- Actions -->
+                        <td class="py-4 px-5 text-center whitespace-nowrap">
                             <div class="flex items-center justify-center gap-2">
-                                <a href="@offer.DestinationUrl" target="_blank" rel="noopener noreferrer" 
-                                   class="inline-flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs transition">
-                                    <span>Ir a la Oferta</span>
+                                <a href="@offer.DestinationUrl" target="_blank" rel="noopener noreferrer"
+                                   class="inline-flex items-center gap-1 bg-slate-900 hover:bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
+                                    <span>Ir Oficial</span>
                                     <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                                 </a>
-                                <button onclick="openReportModal(@offer.Id, '@offer.Title', '@offer.Brand')" 
-                                        title="Reportar oferta vencida o incorrecta" 
+                                <button type="button" onclick="openReportModal(@offer.Id, '@offer.Title', '@offer.Brand')"
                                         class="text-slate-400 hover:text-rose-600 p-1.5 rounded hover:bg-rose-50 transition">
                                     <i class="fa-regular fa-flag"></i>
                                 </button>
@@ -232,128 +566,51 @@ else
             </tbody>
         </table>
     </div>
+</div>
 
-    <!-- Mobile Card View Matrix -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-4 mb-8">
-        @foreach (var offer in Model)
-        {
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col justify-between">
+<!-- Modal de Reporte de Ofertas (Issue 9) -->
+<div id="reportModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+        <div class="bg-gradient-to-r from-red-600 to-rose-700 text-white p-5 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
                 <div>
-                    <div class="flex items-center justify-between mb-2">
-                        @if (offer.Brand.Contains("McDonald"))
-                        {
-                            <span class="px-2.5 py-0.5 rounded text-xs font-bold brand-mcdonalds">🍟 McDonald's</span>
-                        }
-                        else if (offer.Brand.Contains("Burger"))
-                        {
-                            <span class="px-2.5 py-0.5 rounded text-xs font-bold brand-burgerking">👑 Burger King</span>
-                        }
-                        else
-                        {
-                            <span class="px-2.5 py-0.5 rounded text-xs font-bold brand-mostaza">🍔 Mostaza</span>
-                        }
-
-                        @if (offer.BenefitType == "TwoForOne")
-                        {
-                            <span class="bg-purple-100 text-purple-700 text-xs font-black px-2 py-0.5 rounded-full">2x1</span>
-                        }
-                        else if (offer.BenefitType == "PercentageDiscount")
-                        {
-                            <span class="bg-emerald-100 text-emerald-700 text-xs font-black px-2 py-0.5 rounded-full">@(offer.BenefitDescription ?? "% OFF")</span>
-                        }
-                        else if (offer.BenefitType == "FreeGift")
-                        {
-                            <span class="bg-amber-100 text-amber-700 text-xs font-black px-2 py-0.5 rounded-full">Regalo</span>
-                        }
-                    </div>
-
-                    <h4 class="font-bold text-slate-900 text-base mb-1">@offer.Title</h4>
-                    <p class="text-xs text-slate-500 mb-3">@offer.Description</p>
-
-                    <div class="flex items-baseline gap-2 mb-3">
-                        @if (offer.NormalizedPrice > 0)
-                        {
-                            <span class="text-xl font-black text-slate-900">$ @offer.NormalizedPrice.ToString("N0")</span>
-                            @if (offer.OriginalPrice.HasValue)
-                            {
-                                <span class="text-xs text-slate-400 line-through">$ @offer.OriginalPrice.Value.ToString("N0")</span>
-                            }
-                        }
-                        else
-                        {
-                            <span class="text-base font-black text-emerald-600">GRATIS</span>
-                        }
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-2 mb-3">
-                        <span class="text-[11px] font-medium px-2 py-0.5 rounded @(offer.Channel == "App" ? "badge-app" : offer.Channel == "Web" ? "badge-web" : "badge-app-web")">
-                            @offer.Channel
-                        </span>
-                        @if (!string.IsNullOrWhiteSpace(offer.PromoCode))
-                        {
-                            <button onclick="copyCode('@offer.PromoCode', this)" class="inline-flex items-center gap-1 text-xs font-mono font-bold bg-amber-50 text-amber-800 border border-amber-300 px-2 py-0.5 rounded">
-                                <i class="fa-regular fa-copy"></i>
-                                <span>@offer.PromoCode</span>
-                            </button>
-                        }
-                    </div>
-
-                    <p class="text-xs text-slate-500 italic bg-slate-50 p-2 rounded-lg border border-slate-100 mb-4">
-                        @offer.TermsAndConditions
-                    </p>
-                </div>
-
-                <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
-                    <a href="@offer.DestinationUrl" target="_blank" rel="noopener noreferrer" 
-                       class="flex-grow text-center bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 rounded-lg transition">
-                        Ir a la Oferta Oficial <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
-                    </a>
-                    <button onclick="openReportModal(@offer.Id, '@offer.Title', '@offer.Brand')" 
-                            class="px-3 py-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg border border-slate-200 transition">
-                        <i class="fa-regular fa-flag"></i>
-                    </button>
+                    <h3 class="font-bold text-base leading-tight">Reportar Oferta</h3>
+                    <p class="text-white/80 text-[11px]">Ayuda a la comunidad a mantener ofertas vigentes</p>
                 </div>
             </div>
-        }
-    </div>
-}
-
-<!-- User Report Modal (Issue 9) -->
-<div id="reportModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
-        <div class="bg-rose-600 text-white p-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <h3 class="font-bold text-base">Reportar Oferta</h3>
-            </div>
-            <button onclick="closeReportModal()" class="text-white/80 hover:text-white text-lg">&times;</button>
+            <button onclick="closeReportModal()" type="button" class="text-white/70 hover:text-white text-2xl leading-none">&times;</button>
         </div>
 
         <div class="p-6">
-            <p class="text-xs text-slate-500 mb-1">Oferta seleccionada:</p>
-            <div id="reportOfferTitle" class="font-bold text-slate-800 text-sm mb-4"></div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-3 mb-4">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">OFERTA SELECCIONADA</p>
+                <p id="reportOfferTitle" class="font-bold text-slate-900 text-sm mt-0.5"></p>
+            </div>
 
-            <form id="reportForm" onsubmit="submitReport(event)">
+            <form id="reportForm" onsubmit="submitUserReport(event)">
                 <input type="hidden" id="reportOfferId" />
 
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Motivo del reporte *</label>
-                <select id="reportReason" required class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5 mb-4 focus:outline-none focus:ring-2 focus:ring-rose-500">
-                    <option value="Expired">Oferta ya vencida o no disponible</option>
-                    <option value="WrongPrice">Precio incorrecto o diferente al pagar</option>
-                    <option value="BrokenLink">Enlace o cupón roto</option>
-                    <option value="MisleadingTerms">Condiciones o restricciones confusas</option>
-                    <option value="Other">Otro problema</option>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">¿Qué problema encontraste? *</label>
+                <select id="reportReason" required class="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-red-500 font-medium">
+                    <option value="Expired">⏳ Oferta ya expiró o venció</option>
+                    <option value="WrongPrice">💲 El precio cobrado es diferente al publicado</option>
+                    <option value="BrokenLink">🔗 El enlace a la tienda o app no funciona</option>
+                    <option value="StockExhausted">🚫 No hay stock o sucursal no adherida</option>
+                    <option value="Other">⚠️ Otro motivo</option>
                 </select>
 
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Detalle o comentario adicional (opcional)</label>
-                <textarea id="reportComments" rows="3" placeholder="Describe brevemente lo ocurrido..." 
-                          class="w-full text-sm bg-slate-50 border border-slate-300 rounded-lg p-2.5 mb-6 focus:outline-none focus:ring-2 focus:ring-rose-500"></textarea>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">Comentarios adicionales (opcional)</label>
+                <textarea id="reportComments" rows="3" placeholder="Ej: Fui a la sucursal de Palermo y me informaron que venció ayer..."
+                          class="w-full text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl p-3 mb-5 focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
 
-                <div class="flex justify-end gap-3">
-                    <button type="button" onclick="closeReportModal()" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">
+                <div class="flex items-center justify-end gap-2.5">
+                    <button type="button" onclick="closeReportModal()" class="px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">
                         Cancelar
                     </button>
-                    <button type="submit" id="submitReportBtn" class="px-5 py-2 text-sm bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg shadow-sm transition">
+                    <button type="submit" id="submitReportBtn" class="px-5 py-2.5 text-xs sm:text-sm font-bold bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-xl shadow-sm transition">
                         Enviar Reporte
                     </button>
                 </div>
@@ -364,26 +621,174 @@ else
 
 @section Scripts {
     <script>
-        // Issue 8: Copiado automático de código promocional
-        async function copyCode(code, element) {
+        // State
+        let currentBrand = 'all';
+        let currentCategory = 'all';
+        let currentBenefit = 'all';
+        let currentChannel = 'all';
+        let currentSort = 'price_asc';
+        let currentViewMode = 'cards';
+
+        // 1. One-Click Fast Promo Code Copy (Issue 8)
+        async function copyPromoCode(code, btnElement) {
             try {
                 await navigator.clipboard.writeText(code);
-                const originalHtml = element.innerHTML;
-                element.innerHTML = '<i class="fa-solid fa-check text-emerald-600"></i> <span class="text-emerald-700 font-bold">¡Copiado!</span>';
-                element.classList.add('bg-emerald-50', 'border-emerald-300');
-                showToast(`¡Código ${code} copiado al portapapeles!`, true);
+                const originalHtml = btnElement.innerHTML;
+                btnElement.innerHTML = '<i class="fa-solid fa-check text-emerald-600"></i> <span class="text-emerald-700 font-bold">¡Copiado!</span>';
+                btnElement.classList.add('bg-emerald-100', 'border-emerald-400');
+                showToast(`¡Código ${code} copiado al portapapeles!`, true, 'Cupón Copiado');
                 setTimeout(() => {
-                    element.innerHTML = originalHtml;
-                    element.classList.remove('bg-emerald-50', 'border-emerald-300');
-                }, 2000);
+                    btnElement.innerHTML = originalHtml;
+                    btnElement.classList.remove('bg-emerald-100', 'border-emerald-400');
+                }, 2200);
             } catch (err) {
-                showToast(`Código: ${code}`, true);
+                showToast(`Código: ${code}`, true, 'Código Promocional');
             }
         }
 
-        // Issue 9: Report Modal logic
-        function openReportModal(offerId, title, brand) {
-            document.getElementById('reportOfferId').value = offerId;
+        // 2. View Mode Toggle (Cards vs Table)
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            const cardsView = document.getElementById('cardsView');
+            const tableView = document.getElementById('tableView');
+            const cardsBtn = document.getElementById('viewModeCardsBtn');
+            const tableBtn = document.getElementById('viewModeTableBtn');
+
+            if (mode === 'cards') {
+                cardsView.classList.remove('hidden');
+                tableView.classList.add('hidden');
+                cardsBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-white text-slate-900 shadow-xs';
+                tableBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-500 hover:text-slate-900';
+            } else {
+                cardsView.classList.add('hidden');
+                tableView.classList.remove('hidden');
+                tableBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-white text-slate-900 shadow-xs';
+                cardsBtn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-500 hover:text-slate-900';
+            }
+        }
+
+        // 3. Brand Filter Buttons
+        function setBrandFilter(brand) {
+            currentBrand = brand;
+            document.querySelectorAll('.brand-tab-btn').forEach(btn => {
+                if (btn.getAttribute('data-brand') === brand) {
+                    btn.className = 'brand-tab-btn active px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 bg-slate-900 text-white shadow-sm';
+                } else {
+                    btn.className = 'brand-tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200';
+                }
+            });
+            applyFilters();
+        }
+
+        // 4. Category Chips Filter
+        function setCategoryFilter(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-chip').forEach(btn => {
+                if (btn.getAttribute('data-cat') === cat) {
+                    btn.className = 'cat-chip active shrink-0 px-3 py-1.5 rounded-lg font-semibold bg-red-600 text-white';
+                } else {
+                    btn.className = 'cat-chip shrink-0 px-3 py-1.5 rounded-lg font-medium bg-slate-100 hover:bg-slate-200 text-slate-700';
+                }
+            });
+            applyFilters();
+        }
+
+        // 5. Clear Search
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            applyFilters();
+        }
+
+        function resetAllFilters() {
+            clearSearch();
+            setBrandFilter('all');
+            setCategoryFilter('all');
+            document.getElementById('benefitFilter').value = 'all';
+            document.getElementById('channelFilter').value = 'all';
+            document.getElementById('sortSelector').value = 'price_asc';
+            applyFilters();
+        }
+
+        // 6. Master Instant Filter Engine
+        function applyFilters() {
+            const query = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
+            currentBenefit = document.getElementById('benefitFilter').value;
+            currentChannel = document.getElementById('channelFilter').value;
+            currentSort = document.getElementById('sortSelector').value;
+
+            const allItems = Array.from(document.querySelectorAll('.offer-item'));
+            let visibleCount = 0;
+
+            allItems.forEach(item => {
+                const itemBrand = item.getAttribute('data-brand') || '';
+                const itemCategory = item.getAttribute('data-category') || '';
+                const itemBenefit = item.getAttribute('data-benefit') || '';
+                const itemChannel = item.getAttribute('data-channel') || '';
+                const itemSearch = item.getAttribute('data-search') || '';
+
+                const matchesBrand = currentBrand === 'all' || itemBrand === currentBrand;
+                const matchesCategory = currentCategory === 'all' || itemCategory === currentCategory;
+                const matchesBenefit = currentBenefit === 'all' || itemBenefit === currentBenefit;
+                const matchesChannel = currentChannel === 'all' || itemChannel === currentChannel || itemChannel === 'App / Web';
+                const matchesSearch = !query || itemSearch.includes(query);
+
+                if (matchesBrand && matchesCategory && matchesBenefit && matchesChannel && matchesSearch) {
+                    item.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+
+            // Update counter in card view (adjusting by 2 because items exist in both card & table view)
+            const actualCount = Math.floor(visibleCount / 2);
+            const countEl = document.getElementById('visibleOffersCount');
+            if (countEl) countEl.textContent = actualCount;
+
+            const noResults = document.getElementById('noResultsState');
+            if (actualCount === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            // Sort visible items in cards container
+            sortContainer(document.getElementById('cardsView'));
+            sortContainer(document.getElementById('tableBody'));
+        }
+
+        function sortContainer(container) {
+            if (!container) return;
+            const items = Array.from(container.children).filter(c => c.classList.contains('offer-item'));
+            items.sort((a, b) => {
+                const priceA = parseInt(a.getAttribute('data-price') || '0');
+                const priceB = parseInt(b.getAttribute('data-price') || '0');
+                const discountA = parseInt(a.getAttribute('data-discount') || '0');
+                const discountB = parseInt(b.getAttribute('data-discount') || '0');
+                const brandA = a.getAttribute('data-brand') || '';
+                const brandB = b.getAttribute('data-brand') || '';
+
+                if (currentSort === 'price_asc') return priceA - priceB;
+                if (currentSort === 'price_desc') return priceB - priceA;
+                if (currentSort === 'discount_desc') return discountB - discountA;
+                if (currentSort === 'brand') return brandA.localeCompare(brandB);
+                return 0;
+            });
+            items.forEach(item => container.appendChild(item));
+        }
+
+        // 7. Report Modal Logic (Issue 9)
+        function openReportModal(id, title, brand) {
+            document.getElementById('reportOfferId').value = id;
             document.getElementById('reportOfferTitle').textContent = `[${brand}] ${title}`;
             document.getElementById('reportModal').classList.remove('hidden');
         }
@@ -393,7 +798,7 @@ else
             document.getElementById('reportForm').reset();
         }
 
-        async function submitReport(e) {
+        async function submitUserReport(e) {
             e.preventDefault();
             const offerId = parseInt(document.getElementById('reportOfferId').value);
             const reason = document.getElementById('reportReason').value;
@@ -412,17 +817,44 @@ else
 
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    showToast(data.message, true);
+                    showToast('Reporte registrado correctamente. ¡Gracias por colaborar!', true, 'Reporte Enviado');
                     closeReportModal();
                 } else {
-                    showToast(data.message || 'Error al enviar reporte', false);
+                    showToast(data.message || 'Error al enviar reporte', false, 'Error');
                 }
             } catch (err) {
-                showToast('Error de conexión al enviar reporte', false);
+                showToast('Error de conexión al enviar reporte', false, 'Error');
             } finally {
                 btn.disabled = false;
                 btn.textContent = 'Enviar Reporte';
             }
         }
+
+        // 8. Auto-Poll Updates Every 30 seconds to catch Background Scrapes seamlessly
+        let lastKnownOfferCount = @totalOffers;
+        async function pollForBackgroundUpdates() {
+            try {
+                const res = await fetch('/api/catalog/offers');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        if (data.length !== lastKnownOfferCount) {
+                            showToast('¡Nuevas ofertas detectadas por el scraper!', true, 'Sincronizado');
+                            lastKnownOfferCount = data.length;
+                            setTimeout(() => window.location.reload(), 1500);
+                        }
+                    }
+                }
+            } catch (e) {
+                // Ignore transient errors
+            }
+        }
+
+        setInterval(pollForBackgroundUpdates, 30000); // 30s background poll
+
+        // Initialize sorting
+        document.addEventListener('DOMContentLoaded', () => {
+            applyFilters();
+        });
     </script>
 }
