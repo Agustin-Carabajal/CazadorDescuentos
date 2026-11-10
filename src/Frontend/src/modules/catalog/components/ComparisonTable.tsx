@@ -184,12 +184,13 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                 </div>
 
                 {/* Bottom Action Row (Verified Direct Deep Link) */}
-                <div className="pt-3 border-t border-slate-100 flex items-center gap-2">
+                <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
                   <a
                     href={offer.destinationUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`flex-grow text-center text-xs font-bold py-2.5 px-4 rounded-xl text-white transition-all shadow-xs flex items-center justify-center gap-1.5 ${
+                    title={`Ir directamente a ${offer.destinationUrl}`}
+                    className={`w-full text-center text-xs font-bold py-2.5 px-4 rounded-xl text-white transition-all shadow-xs flex items-center justify-center gap-1.5 ${
                       isMc
                         ? 'bg-red-600 hover:bg-red-700'
                         : isBk
@@ -197,11 +198,24 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                         : 'bg-rose-700 hover:bg-rose-800'
                     }`}
                   >
-                    <span>Ir a la Oferta Oficial</span>
-                    <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    {offer.channel.includes('App') && !offer.channel.includes('Web') ? (
+                      <>
+                        <i className="fa-solid fa-mobile-screen-button text-[10px]"></i>
+                        <span>Descargar App para esta Oferta ↗</span>
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        <span>Ver Oferta en Web Oficial ↗</span>
+                      </>
+                    )}
                   </a>
-
-                  <ReportButton onReportClick={() => onReportClick(offer)} />
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-slate-400 truncate max-w-[180px]" title={offer.destinationUrl}>
+                      🔗 {offer.destinationUrl.replace('https://', '').split('/')[0]}
+                    </span>
+                    <ReportButton onReportClick={() => onReportClick(offer)} />
+                  </div>
                 </div>
               </div>
             );

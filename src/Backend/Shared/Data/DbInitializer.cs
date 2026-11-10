@@ -67,14 +67,13 @@ public static class DbInitializer
         if (lower.Contains("burger"))
         {
             if (channel == "App") return "https://play.google.com/store/apps/details?id=com.alsea.mi_bk_ar";
-            return "https://www.burgerking.com.ar";
+            return "https://www.burgerking.com.ar/carta";
         }
         if (lower.Contains("mostaza"))
         {
             if (channel == "App") return "https://play.google.com/store/apps/details?id=ar.com.mostazaweb.mostaza";
             if (text.Contains("bancaria", StringComparison.OrdinalIgnoreCase)) return "https://www.mostazaweb.com.ar/promos-bancarias";
-            if (channel == "Web") return "https://www.mostazaweb.com.ar/menu";
-            return "https://www.mostazaweb.com.ar";
+            return "https://www.mostazaweb.com.ar/";
         }
         return "https://www.mcdonalds.com.ar";
     }
@@ -242,7 +241,7 @@ public static class DbInitializer
                 Category = "Desayuno y Merienda",
                 PromoCode = null,
                 Channel = "App / Web",
-                DestinationUrl = "https://www.mcdonalds.com.ar/menu",
+                DestinationUrl = "https://pedidos.mcdonalds.com.ar",
                 TermsAndConditions = "Válido de 7:00 a 11:30 hs en sucursales McCafé de todo el país.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(30),
@@ -260,7 +259,7 @@ public static class DbInitializer
                 Category = "Postre",
                 PromoCode = null,
                 Channel = "App / Web",
-                DestinationUrl = "https://www.mcdonalds.com.ar",
+                DestinationUrl = "https://pedidos.mcdonalds.com.ar",
                 TermsAndConditions = "Promoción directa en todos los centros de postres y sucursales.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(30),
@@ -280,7 +279,7 @@ public static class DbInitializer
                 Category = "Hamburguesa",
                 PromoCode = "BK2X1",
                 Channel = "Web",
-                DestinationUrl = "https://www.burgerking.com.ar",
+                DestinationUrl = "https://www.burgerking.com.ar/carta",
                 TermsAndConditions = "Exclusivo compra web oficial con código. Válido sábados y domingos.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(28),
@@ -316,7 +315,7 @@ public static class DbInitializer
                 Category = "Pollo",
                 PromoCode = "BKPOLLO",
                 Channel = "Web",
-                DestinationUrl = "https://www.burgerking.com.ar",
+                DestinationUrl = "https://www.burgerking.com.ar/carta",
                 TermsAndConditions = "Exclusivo pedidos web oficial de Burger King Argentina. Válido hasta el viernes.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(16),
@@ -352,7 +351,7 @@ public static class DbInitializer
                 Category = "Combo",
                 PromoCode = "WHOPPERNOW",
                 Channel = "Web",
-                DestinationUrl = "https://www.burgerking.com.ar",
+                DestinationUrl = "https://www.burgerking.com.ar/carta",
                 TermsAndConditions = "Válido en la web oficial para retiro en tienda en sucursales habilitadas.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(30),
@@ -388,7 +387,7 @@ public static class DbInitializer
                 Category = "Combo",
                 PromoCode = null,
                 Channel = "App / Web",
-                DestinationUrl = "https://www.burgerking.com.ar",
+                DestinationUrl = "https://www.burgerking.com.ar/carta",
                 TermsAndConditions = "Precio fijo promocional disponible de lunes a viernes.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(25),
@@ -424,7 +423,7 @@ public static class DbInitializer
                 Category = "Pollo",
                 PromoCode = "BKNUGGETS",
                 Channel = "Web",
-                DestinationUrl = "https://www.burgerking.com.ar",
+                DestinationUrl = "https://www.burgerking.com.ar/carta",
                 TermsAndConditions = "Promoción activa en web oficial para compra online.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(24),
@@ -442,7 +441,7 @@ public static class DbInitializer
                 Category = "Desayuno y Merienda",
                 PromoCode = null,
                 Channel = "App / Web",
-                DestinationUrl = "https://www.burgerking.com.ar",
+                DestinationUrl = "https://www.burgerking.com.ar/carta",
                 TermsAndConditions = "Válido horario de mañana de 8 a 11 hs para consumo en salón o take-away.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(30),
@@ -480,7 +479,7 @@ public static class DbInitializer
                 Category = "Hamburguesa",
                 PromoCode = "DIBU2X1",
                 Channel = "Web",
-                DestinationUrl = "https://www.mostazaweb.com.ar",
+                DestinationUrl = "https://www.mostazaweb.com.ar/",
                 TermsAndConditions = "Exclusivo compras en la web oficial con código. Pago con cualquier medio.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(22),
@@ -498,7 +497,7 @@ public static class DbInitializer
                 Category = "Pollo",
                 PromoCode = null,
                 Channel = "Web",
-                DestinationUrl = "https://www.mostazaweb.com.ar/menu",
+                DestinationUrl = "https://www.mostazaweb.com.ar/",
                 TermsAndConditions = "Modalidad take-away o consumo en local de lunes a viernes.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(18),
@@ -534,7 +533,7 @@ public static class DbInitializer
                 Category = "Combo",
                 PromoCode = "MEGABOOM",
                 Channel = "App / Web",
-                DestinationUrl = "https://www.mostazaweb.com.ar",
+                DestinationUrl = "https://www.mostazaweb.com.ar/",
                 TermsAndConditions = "Válido en web y App oficial para retiro en tienda.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(30),
@@ -588,7 +587,7 @@ public static class DbInitializer
                 Category = "Combo",
                 PromoCode = "BACONJR",
                 Channel = "App / Web",
-                DestinationUrl = "https://www.mostazaweb.com.ar",
+                DestinationUrl = "https://www.mostazaweb.com.ar/",
                 TermsAndConditions = "Disponible en todo el territorio nacional.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(28),
@@ -624,7 +623,7 @@ public static class DbInitializer
                 Category = "Desayuno y Merienda",
                 PromoCode = null,
                 Channel = "App / Web",
-                DestinationUrl = "https://www.mostazaweb.com.ar/menu",
+                DestinationUrl = "https://www.mostazaweb.com.ar/",
                 TermsAndConditions = "Válido horario matutino en locales Mostaza adheridos.",
                 ValidFrom = now,
                 ValidUntil = now.AddDays(30),

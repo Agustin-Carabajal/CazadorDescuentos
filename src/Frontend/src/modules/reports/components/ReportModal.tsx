@@ -15,6 +15,15 @@ export const ReportModal: React.FC<ReportModalProps> = ({ offer, isOpen, onClose
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Cerrar con Escape (Heurística Nielsen #3: User control and freedom)
+  React.useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
   if (!isOpen || !offer) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,7 +56,13 @@ export const ReportModal: React.FC<ReportModalProps> = ({ offer, isOpen, onClose
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Reportar oferta"
+    >
       <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
         <div className="bg-rose-600 text-white p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
