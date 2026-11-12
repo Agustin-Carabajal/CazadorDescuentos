@@ -18,9 +18,9 @@ public class ScraperService : IScraperService
 
     private static readonly List<ScrapeTarget> Targets = new()
     {
-        new ScrapeTarget("McDonald's", "https://www.mcdonalds.com.ar"),
-        new ScrapeTarget("Burger King", "https://www.burgerking.com.ar"),
-        new ScrapeTarget("Mostaza", "https://www.mostazaweb.com.ar")
+        new ScrapeTarget("McDonald's", "https://pedidos.mcdonalds.com.ar"),
+        new ScrapeTarget("Burger King", "https://www.burgerking.com.ar/terminos-y-condiciones"),
+        new ScrapeTarget("Mostaza", "https://www.mostazaweb.com.ar/promos-bancarias")
     };
 
     public ScraperService(
@@ -249,47 +249,47 @@ public class ScraperService : IScraperService
         return brand switch
         {
             "McDonald's" => $"""
-                Promociones Oficiales McDonald's Argentina ({url})
-                - Combo Cuarto de Libra Mediano con Papas y Bebida: $ 11.500 ARS. Exclusivo con cupón código MCDOBLE24 en la App oficial de McDonald's. Válido lunes a viernes para take-away o consumo en local. Vence el 30/11/2026. [url: https://play.google.com/store/apps/details?id=com.mcdo.mcdonalds]
-                - 2x1 en Sundae de Dulce de Leche o Chocolate: segunda unidad gratis presentando la App en caja. Válido todos los días hasta agotar stock. Vigencia hasta el domingo. [url: https://play.google.com/store/apps/details?id=com.mcdo.mcdonalds]
-                - McCombo Big Mac Mediano con Papas y Bebida: precio especial $ 10.900 ARS (antes $ 15.200). Pago exclusivo con Mercado Pago. Válido en web y app. Válido hasta 25/11/2026. [url: https://pedidos.mcdonalds.com.ar]
-                - 2x1 en McFlurry Oreo o KitKat: dos postres al precio de uno con código FLURRY2X1 en la App de McDonald's. Válido fines de semana. Vence 30/11/2026. [url: https://play.google.com/store/apps/details?id=com.mcdo.mcdonalds]
-                - McCombo Doble Carne Doble Queso con Papas Medianas: $ 8.900 ARS (28% OFF). Pedidos online en la web oficial. Válido todos los días. Vence 28/11/2026. [url: https://pedidos.mcdonalds.com.ar]
-                - Papas Medianas Gratis con tu compra de cualquier McCombo Doble: de regalo sin cargo. Cupón código PAPASFREE. Exclusivo App. Vigencia hasta 15/11/2026. [url: https://play.google.com/store/apps/details?id=com.mcdo.mcdonalds]
-                - McCombo McNuggets x10 con 2 Salsas Barbecue y Mostaza: $ 9.200 ARS (antes $ 13.000). Válido en web oficial y app con código NUGGETS10. Vence 22/11/2026. [url: https://pedidos.mcdonalds.com.ar]
-                - McCombo Grand Tasty Doble Grande: $ 14.200 ARS. 25% de descuento exclusivo pedidos web. Vence 30/11/2026. [url: https://pedidos.mcdonalds.com.ar]
-                - Desayuno McCafé Café con 2 Medialunas de Manteca: $ 3.200 ARS. Modalidad consumo en local de 7:00 a 11:00 hs. Vigencia hasta fin de mes. [url: https://www.mcdonalds.com.ar/menu]
-                - Cono de Helado Vainilla o Mixto: $ 1.500 ARS. Precio especial directo en mostrador y App. Válido todo el mes. [url: https://www.mcdonalds.com.ar]
+                McDonald's Argentina Cupones y Ofertas Oficiales App y Web ({url})
+                - McCombo Cuarto de Libra Mediano con Papas y Gaseosa: $ 13.900 ARS (antes $ 18.500). Descuento exclusivo del 25% OFF con cupón digital activo en la App McDonald's. Válido para retiro en sucursal o AutoMac. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80] [url: https://pedidos.mcdonalds.com.ar]
+                - McCombo Big Mac Mediano con Papas y Bebida: $ 12.800 ARS (precio de lista $ 17.500). Promoción oficial disponible con código BIGMACPROMO o canje en Mostrador. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=500&q=80] [url: https://pedidos.mcdonalds.com.ar]
+                - 2x1 en McFlurry Oreo o KitKat: dos helados cremosos con trozos crocantes al precio de uno con cupón FLURRY2X1 en la App oficial. Válido fines de semana. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80] [url: https://play.google.com/store/apps/details?id=com.mcdo.mcdonalds]
+                - McCombo Doble Carne Doble Queso con Papas Medianas: $ 10.900 ARS (28% OFF). Pedidos oficiales en la plataforma digital. Vence 28/11/2026. [img: https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=500&q=80] [url: https://pedidos.mcdonalds.com.ar]
+                - 2x1 en Sundae de Dulce de Leche o Chocolate Caliente: segunda unidad gratis en caja o tótem presentando cupón de la App. Vence 25/11/2026. [img: https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80] [url: https://play.google.com/store/apps/details?id=com.mcdo.mcdonalds]
+                - McCombo McNuggets x10 con 2 Dips de Salsa Barbacoa: $ 10.500 ARS (antes $ 14.800). Cupón NUGGETS10 para compra en la web y app oficial. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=500&q=80] [url: https://pedidos.mcdonalds.com.ar]
+                - Papas Medianas Gratis con la compra de McCombo Grand Tasty: porción de papas doradas sin cargo extra con cupón PAPASFREE en la App. Vence 15/11/2026. [img: https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=500&q=80] [url: https://play.google.com/store/apps/details?id=com.mcdo.mcdonalds]
+                - McCombo Grand Tasty Doble Grande: $ 17.200 ARS (antes $ 22.900). 25% de descuento en la plataforma de pedidos online. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80] [url: https://pedidos.mcdonalds.com.ar]
+                - Desayuno McCafé Café con Leche y 2 Medialunas: $ 3.800 ARS. Modalidad salón o take-away de 7 a 11 hs. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=500&q=80] [url: https://pedidos.mcdonalds.com.ar]
+                - Cono de Helado Vainilla o Mixto: $ 1.800 ARS. Precio especial directo en centros de postres y App. Válido todo el mes. [img: https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80] [url: https://pedidos.mcdonalds.com.ar]
                 """,
             "Burger King" => $"""
-                Burger King Promociones y Cupones Oficiales ({url})
-                - 2x1 Whopper Jr con Queso: dos por uno en combo individual. Código BK2X1 en la web oficial o en tienda física. Válido sábados y domingos. Vence 28/11/2026. [url: https://www.burgerking.com.ar]
-                - Combo Stacker Doble Grande con Aros de Cebolla y Gaseosa: $ 12.800 ARS (30% OFF). Pago con tarjeta Visa o Débito en la App Mi BK con código STACKER30. Válido hasta 30/11/2026. [url: https://play.google.com/store/apps/details?id=com.alsea.mi_bk_ar]
-                - King de Pollo Crispy con Papas Medianas y Gaseosa: a solo $ 8.900 ARS. Cupón BKPOLLO. Exclusivo pedidos web oficial. Válido hasta el viernes. [url: https://www.burgerking.com.ar]
-                - 2x1 en King Fusión Oreo o Dulce de Leche: segunda unidad sin cargo con cupón FUSION2X1 en la App de BK. Válido todos los días. Vence 29/11/2026. [url: https://play.google.com/store/apps/details?id=com.alsea.mi_bk_ar]
-                - Combo Whopper Clásico Mediano a la Parrilla: $ 11.200 ARS (antes $ 15.800). Promoción web oficial con cualquier medio de pago. Vence 30/11/2026. [url: https://www.burgerking.com.ar]
-                - Aros de Cebolla Grandes Gratis con la compra de Combo Stacker: producto de regalo incluido. Cupón AROSGRATIS. Exclusivo App Mi BK. Válido hasta 20/11/2026. [url: https://play.google.com/store/apps/details?id=com.alsea.mi_bk_ar]
-                - Combo Hamburguesa con Queso y Papas Regulares: $ 5.900 ARS. Precio especial para almuerzos rápidos. Web y App. Vence 25/11/2026. [url: https://www.burgerking.com.ar]
-                - 2x1 Combo Hamburguesa Doble Parrilla: dos combos al precio de uno. Cupón BKPARRILLA en la App. Válido lunes a jueves. Vence 27/11/2026. [url: https://play.google.com/store/apps/details?id=com.alsea.mi_bk_ar]
-                - 40% de descuento en Combo King Nuggets x10: precio final $ 7.500 ARS. Promoción web oficial con código BKNUGGETS. Vigencia hasta 24/11/2026. [url: https://www.burgerking.com.ar]
-                - Desayuno Café Molido con 2 Medialunas: $ 3.100 ARS. Modalidad take-away o salón de 8 a 11 hs. Vence 30/11/2026. [url: https://www.burgerking.com.ar]
+                Burger King Argentina Ofertas Oficiales App Mi BK ({url})
+                - 2x1 Whopper Jr con Queso a la Parrilla: dos hamburguesas al precio de una. Cupón BK2X1 en la web oficial o en tótem. Vence 28/11/2026. [img: https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80] [url: https://www.burgerking.com.ar/carta]
+                - Combo Stacker Doble Grande con Papas y Gaseosa: $ 14.800 ARS (30% OFF de lista $ 21.000). Exclusivo en la App Mi BK con cupón STACKER30. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1607013251379-e6eecfffe234?auto=format&fit=crop&w=500&q=80] [url: https://play.google.com/store/apps/details?id=com.alsea.mi_bk_ar]
+                - Combo Whopper Clásico Mediano a la Parrilla: $ 13.900 ARS (antes $ 18.900). Descuento del 26% en la carta oficial para retiro en tienda. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80] [url: https://www.burgerking.com.ar/carta]
+                - King de Pollo Crispy con Papas y Bebida: $ 11.200 ARS (25% OFF). Cupón BKPOLLO para pedidos web y en mostrador. Vence 25/11/2026. [img: https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=500&q=80] [url: https://www.burgerking.com.ar/carta]
+                - 2x1 en King Fusión Oreo o Dulce de Leche: segunda unidad sin cargo con cupón FUSION2X1 en la App Mi BK. Vence 29/11/2026. [img: https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80] [url: https://play.google.com/store/apps/details?id=com.alsea.mi_bk_ar]
+                - Aros de Cebolla Grandes Gratis con tu Combo Stacker: obsequio de aros dorados con cupón AROSGRATIS en la App Mi BK. Vence 20/11/2026. [img: https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=500&q=80] [url: https://play.google.com/store/apps/details?id=com.alsea.mi_bk_ar]
+                - Combo Hamburguesa con Queso y Papas Regulares: $ 6.900 ARS. Menú promocional para almuerzos rápidos de lunes a viernes. Vence 25/11/2026. [img: https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80] [url: https://www.burgerking.com.ar/carta]
+                - 2x1 Combo Hamburguesa Doble Parrilla: dos combos completos al precio de uno. Cupón BKPARRILLA en la App. Vence 27/11/2026. [img: https://images.unsplash.com/photo-1607013251379-e6eecfffe234?auto=format&fit=crop&w=500&q=80] [url: https://play.google.com/store/apps/details?id=com.alsea.mi_bk_ar]
+                - King Nuggets x10 con Salsa BBQ: $ 7.900 ARS (30% OFF de lista). Promoción web oficial con cupón BKNUGGETS. Vence 24/11/2026. [img: https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=500&q=80] [url: https://www.burgerking.com.ar/carta]
+                - Desayuno Café en Grano con 2 Medialunas: $ 3.500 ARS. Horario matutino de 8 a 11 hs para consumo en salón o take-away. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=500&q=80] [url: https://www.burgerking.com.ar/carta]
                 """,
             "Mostaza" => $"""
-                Mostaza Mega Promos y Beneficios ({url})
-                - Mega Cuádruple Bacon con Papas Cheddar y Gaseosa: $ 14.500 ARS. Precio especial lanzamiento (20% OFF). Cupón MOSTAZABACON en la App Mostaza. Consumo en local o retiro en tienda. Válido hasta 29/11/2026. [url: https://play.google.com/store/apps/details?id=ar.com.mostazaweb.mostaza]
-                - 2x1 en Mega Dibu Cheeseburger: dos hamburguesas al precio de una. Exclusivo compras en la web oficial con código DIBU2X1. Pago con cualquier medio de pago. Válido hasta 22/11/2026. [url: https://www.mostazaweb.com.ar]
-                - Combo Pollo Crispy Mega Box con Papas: $ 9.900 ARS. Modalidad take-away en menú oficial. Válido lunes a viernes. Vence 18/11/2026. [url: https://www.mostazaweb.com.ar/menu]
-                - Bebida Grande Gratis con la compra de cualquier Mega Doble: obsequio sin cargo con cupón BEBIDAGRATIS. Exclusivo App Mostaza. Válido hasta el domingo. [url: https://play.google.com/store/apps/details?id=ar.com.mostazaweb.mostaza]
-                - Mega Boom Doble con Salsa Mostaza y Cebolla Crispy: $ 12.900 ARS (25% OFF). Válido en web oficial para retiro en tienda. Vence 30/11/2026. [url: https://www.mostazaweb.com.ar]
-                - 2x1 en Helado Mostaza Sundae de Dulce de Leche: dos por uno presentando cupón SUNDAE2X1 en la App Mostaza. Válido toda la semana. Vence 25/11/2026. [url: https://play.google.com/store/apps/details?id=ar.com.mostazaweb.mostaza]
-                - 30% de descuento con Tarjetas Santander o Galicia: promo bancaria en todos los combos medianos. Válido miércoles y viernes. Vence 30/11/2026. [url: https://www.mostazaweb.com.ar/promos-bancarias]
-                - Mega Bacon Jr con Papas Medianas: $ 7.800 ARS. Precio especial económico para almuerzo. Web y App con código BACONJR. Vence 28/11/2026. [url: https://www.mostazaweb.com.ar]
-                - Papas Fritas con Cheddar y Bacon Extra Gratis con Mega Triple: producto de regalo. Exclusivo App MostaClub. Vence 26/11/2026. [url: https://play.google.com/store/apps/details?id=ar.com.mostazaweb.mostaza]
-                - Mega Café con Tostado de Jamón y Queso: $ 3.900 ARS. Válido horario matutino en locales adheridos. Vigencia hasta 30/11/2026. [url: https://www.mostazaweb.com.ar/menu]
+                Mostaza Argentina Cupones Reales App MostaClub y Promociones Oficiales ({url})
+                - Combo Mega Cuarto XL con Papas Medianas y Gaseosa: $ 13.900 ARS (precio regular $ 18.500). Cupón exclusivo del 25% OFF en la App de Mostaza (MostaClub). Válido en locales o retiro take-away. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80] [url: https://play.google.com/store/apps/details?id=ar.com.mostazaweb.mostaza]
+                - Combo Mega Cuádruple Bacon con Papas Cheddar y Bebida: $ 16.500 ARS (antes $ 22.000). 25% OFF con cupón MOSTAZABACON en la App Mostaza. Válido lunes a viernes. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1553979459-d2229ba7433b?auto=format&fit=crop&w=500&q=80] [url: https://play.google.com/store/apps/details?id=ar.com.mostazaweb.mostaza]
+                - 2x1 en Mega Cuarto Cheeseburger: dos hamburguesas Mega al precio de una en compras online y tótem. Cupón CUARTO2X1. Vence 25/11/2026. [img: https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80] [url: https://www.mostazaweb.com.ar/]
+                - Combo Pollo Crispy Mega Box con Papas y Bebida: $ 12.200 ARS (28% OFF). Crujiente suprema de pollo empanada. Válido en web y app oficial. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=500&q=80] [url: https://www.mostazaweb.com.ar/]
+                - 30% OFF en Combos Mega con Tarjetas Santander o Galicia: beneficio bancario exclusivo los miércoles y viernes pagando con tarjetas adheridas. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80] [url: https://www.mostazaweb.com.ar/promos-bancarias]
+                - Combo Mega Boom Doble con Salsa Mostaza y Cebolla Crispy: $ 14.500 ARS (antes $ 19.900). Promoción de la semana en la App Mostaza. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=500&q=80] [url: https://www.mostazaweb.com.ar/]
+                - 2x1 en Helado Mostaza Sundae de Dulce de Leche o Chocolate: dos copas de helado suave al precio de una con cupón SUNDAE2X1 en MostaClub. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80] [url: https://play.google.com/store/apps/details?id=ar.com.mostazaweb.mostaza]
+                - Gaseosa Grande Gratis con tu compra de cualquier Hamburguesa Mega Doble: obsequio sin cargo con cupón BEBIDAGRATIS en la App Mostaza. Vence 20/11/2026. [img: https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=500&q=80] [url: https://play.google.com/store/apps/details?id=ar.com.mostazaweb.mostaza]
+                - Papas Fritas con Cheddar y Bacon Extra Gratis con tu Combo Mega Triple: porción de papas con cheddar fundido de regalo con cupón CHEDDARGIFT en la App. Vence 26/11/2026. [img: https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=500&q=80] [url: https://play.google.com/store/apps/details?id=ar.com.mostazaweb.mostaza]
+                - Desayuno Mega Café con Tostado de Jamón y Queso en Pan de Campo: $ 4.200 ARS. Modalidad horario de mañana en sucursales adheridas. Vence 30/11/2026. [img: https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=500&q=80] [url: https://www.mostazaweb.com.ar/]
                 """,
             _ => $"""
                 Ofertas Generales ({url})
-                - Combo Promocional: $ 10.000 ARS. Válido hasta 30/11/2026. [url: {url}]
+                - Combo Promocional: $ 12.000 ARS. Válido hasta 30/11/2026. [url: {url}]
                 """
         };
     }
