@@ -13,6 +13,7 @@ export interface Offer {
   promoCode?: string | null;
   channel: string;
   destinationUrl: string;
+  imageUrl?: string | null;
   termsAndConditions?: string | null;
   validUntil: string;
   isActive: boolean;

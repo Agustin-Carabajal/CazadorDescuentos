@@ -46,6 +46,9 @@ public class Offer
     [MaxLength(500)]
     public string DestinationUrl { get; set; } = string.Empty;
 
+    [MaxLength(500)]
+    public string? ImageUrl { get; set; }
+
     [MaxLength(2000)]
     public string? TermsAndConditions { get; set; }
 

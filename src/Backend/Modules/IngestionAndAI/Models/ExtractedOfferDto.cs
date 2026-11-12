@@ -13,6 +13,7 @@ public class ExtractedOfferDto
     public string? PromoCode { get; set; }
     public string Channel { get; set; } = "App / Web";
     public string DestinationUrl { get; set; } = string.Empty;
+    public string? ImageUrl { get; set; }
     public string? TermsAndConditions { get; set; }
     public string? RawValidUntil { get; set; }
     public string ValidUntil { get; set; } = string.Empty;

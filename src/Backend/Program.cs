@@ -18,6 +18,7 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<INormalizationService, NormalizationService>();
 builder.Services.AddScoped<IBenefitClassificationService, BenefitClassificationService>();
 builder.Services.AddScoped<IAiInterpretationService, AiInterpretationService>();
+builder.Services.AddScoped<IOcrExtractionService, OcrExtractionService>();
 builder.Services.AddScoped<IScraperService, ScraperService>();
 
 // Register HTTP Client for scraping and external AI calls

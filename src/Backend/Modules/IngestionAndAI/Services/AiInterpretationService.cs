@@ -238,6 +238,9 @@ public class AiInterpretationService : IAiInterpretationService
             // Destination URL resolution (verified real links per brand and channel)
             var destinationUrl = ResolveDestinationUrl(brand, channel, combinedText, sourceUrl);
 
+            // Image URL extraction
+            var imageUrl = ExtractImageUrl(combinedText, category);
+
             var offer = new ExtractedOfferDto
             {
                 Title = _normalizationService.NormalizeName(CleanTitle(titleLine)),
@@ -253,6 +256,7 @@ public class AiInterpretationService : IAiInterpretationService
                 PromoCode = promoCode,
                 Channel = channel,
                 DestinationUrl = destinationUrl,
+                ImageUrl = imageUrl,
                 TermsAndConditions = terms,
                 RawValidUntil = rawDate,
                 ValidUntil = validUntilIso
@@ -437,8 +441,7 @@ public class AiInterpretationService : IAiInterpretationService
         if (lowerBrand.Contains("burger"))
         {
             if (channel == "App") return "https://play.google.com/store/apps/details?id=com.alsea.mi_bk_ar";
-            if (channel == "Web") return "https://www.burgerking.com.ar";
-            return "https://www.burgerking.com.ar";
+            return "https://www.burgerking.com.ar/carta";
         }
 
         if (lowerBrand.Contains("mostaza"))
@@ -446,10 +449,29 @@ public class AiInterpretationService : IAiInterpretationService
             if (channel == "App") return "https://play.google.com/store/apps/details?id=ar.com.mostazaweb.mostaza";
             if (text.Contains("bancaria", StringComparison.OrdinalIgnoreCase) || text.Contains("santander", StringComparison.OrdinalIgnoreCase) || text.Contains("galicia", StringComparison.OrdinalIgnoreCase))
                 return "https://www.mostazaweb.com.ar/promos-bancarias";
-            if (channel == "Web") return "https://www.mostazaweb.com.ar/menu";
-            return "https://www.mostazaweb.com.ar";
+            return "https://www.mostazaweb.com.ar/";
         }
 
-        return defaultSourceUrl.EndsWith("/promociones") ? "https://www.mcdonalds.com.ar" : defaultSourceUrl;
+        return defaultSourceUrl.EndsWith("/promociones") ? "https://pedidos.mcdonalds.com.ar" : defaultSourceUrl;
+    }
+
+    private static string? ExtractImageUrl(string text, string category)
+    {
+        var imgMatch = Regex.Match(text, @"\[img:\s*([https]{4,5}:\/\/[^\s\]]+)\]", RegexOptions.IgnoreCase);
+        if (imgMatch.Success)
+        {
+            return imgMatch.Groups[1].Value.Trim();
+        }
+
+        // Return a category-appropriate default image
+        return category.ToLowerInvariant() switch
+        {
+            "postre" => "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=400&q=80",
+            "pollo" => "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=400&q=80",
+            "papas y snacks" => "https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=400&q=80",
+            "desayuno y merienda" => "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=400&q=80",
+            "bebida" => "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80",
+            _ => "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80"
+        };
     }
 }

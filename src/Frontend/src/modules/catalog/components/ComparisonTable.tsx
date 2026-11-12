@@ -100,6 +100,26 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                     <ChannelBadge channel={offer.channel} />
                   </div>
 
+                  {/* Product Image (OCR & Visual Recognition) */}
+                  {offer.imageUrl && (
+                    <div className="relative w-full h-40 mb-3 rounded-xl overflow-hidden bg-slate-100 border border-slate-100">
+                      <img
+                        src={offer.imageUrl}
+                        alt={offer.title}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                        onError={(e) => {
+                          // Fallback si la imagen no carga
+                          (e.target as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                      <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md bg-slate-900/70 text-white text-[10px] font-bold backdrop-blur-xs flex items-center gap-1">
+                        <i className="fa-solid fa-camera text-[9px] text-amber-400"></i>
+                        <span>OCR / Foto Producto</span>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Title & Category */}
                   <div className="mb-2">
                     <span className="inline-block text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-600 mb-1">
@@ -263,12 +283,24 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                       </td>
 
                       <td className="py-4 px-5">
-                        <div className="font-bold text-slate-900">{offer.title}</div>
-                        <div className="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5">
-                          <span className="bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-medium">
-                            {offer.category}
-                          </span>
-                          <span>Vence: {new Date(offer.validUntil).toLocaleDateString('es-AR')}</span>
+                        <div className="flex items-center gap-3">
+                          {offer.imageUrl && (
+                            <img
+                              src={offer.imageUrl}
+                              alt={offer.title}
+                              className="w-12 h-12 object-cover rounded-lg shrink-0 border border-slate-200"
+                              loading="lazy"
+                            />
+                          )}
+                          <div>
+                            <div className="font-bold text-slate-900">{offer.title}</div>
+                            <div className="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5">
+                              <span className="bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-medium">
+                                {offer.category}
+                              </span>
+                              <span>Vence: {new Date(offer.validUntil).toLocaleDateString('es-AR')}</span>
+                            </div>
+                          </div>
                         </div>
                       </td>
 

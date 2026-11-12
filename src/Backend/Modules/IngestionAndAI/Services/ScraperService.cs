@@ -121,6 +121,10 @@ public class ScraperService : IScraperService
                         existing.PromoCode = dto.PromoCode;
                         existing.Channel = dto.Channel;
                         existing.DestinationUrl = dto.DestinationUrl;
+                        if (!string.IsNullOrWhiteSpace(dto.ImageUrl))
+                        {
+                            existing.ImageUrl = dto.ImageUrl;
+                        }
                         existing.TermsAndConditions = dto.TermsAndConditions;
                         if (DateTime.TryParse(dto.ValidUntil, out var parsedValidUntil))
                         {
@@ -147,6 +151,7 @@ public class ScraperService : IScraperService
                             PromoCode = dto.PromoCode,
                             Channel = dto.Channel,
                             DestinationUrl = dto.DestinationUrl,
+                            ImageUrl = dto.ImageUrl,
                             TermsAndConditions = dto.TermsAndConditions,
                             ValidFrom = DateTime.UtcNow,
                             ValidUntil = validUntil,

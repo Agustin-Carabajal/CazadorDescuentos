@@ -26,6 +26,7 @@ public class OfferResponseDto
     public string? PromoCode { get; set; }
     public string Channel { get; set; } = string.Empty;
     public string DestinationUrl { get; set; } = string.Empty;
+    public string? ImageUrl { get; set; }
     public string? TermsAndConditions { get; set; }
     public DateTime ValidUntil { get; set; }
     public bool IsActive { get; set; }
